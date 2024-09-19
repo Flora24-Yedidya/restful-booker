@@ -12,8 +12,8 @@ This project contains automated tests for the [Restful Booker API](https://restf
 
  - **Clone the Repository:**
    ```bash
-   git clone <repository-url>
-   cd <repository-directory>
+   git clone https://github.com/Flora24-Yedidya/restful-booker.git
+   cd restful-booker
 
 ## How to Run the Tests
 
