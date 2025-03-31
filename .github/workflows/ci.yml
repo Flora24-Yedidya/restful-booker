@@ -24,4 +24,9 @@ jobs:
           echo 'else' >> get-branch-name.sh
           echo '    branch_name=$(git rev-parse --abbrev-ref HEAD)' >> get-branch-name.sh
           echo 'fi' >> get-branch-name.sh
-          echo 'branch_name=$(echo "$branch_name" | sed "s
+          echo 'branch_name=$(echo "$branch_name" | sed "s/\//-/g")' >> get-branch-name.sh
+          echo 'echo "Nom de la branche : $branch_name"' >> get-branch-name.sh
+          chmod +x get-branch-name.sh
+
+      - name: Run branch name script
+        run: ./get-branch-name.sh
