@@ -24,4 +24,4 @@ jobs:
           echo 'else' >> get-branch-name.sh
           echo '    branch_name=$(git rev-parse --abbrev-ref HEAD)' >> get-branch-name.sh
           echo 'fi' >> get-branch-name.sh
-          echo 'branch_name=$(echo "$branch_name
+          echo 'branch_name=$(echo "$branch_name" | sed "s
