@@ -1,0 +1,32 @@
+name: Get Branch Name
+
+on:
+  push:
+    branches:
+      - '**'  # Pour toutes les branches
+  pull_request:
+    branches:
+      - '**'  # Pour toutes les PR
+
+jobs:
+  get-branch-name:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up the branch name script
+        run: |
+          echo '#!/bin/bash' > get-branch-name.sh
+          echo 'if [[ -n "$GITHUB_HEAD_REF" ]]; then' >> get-branch-name.sh
+          echo '    branch_name="${GITHUB_HEAD_REF}"' >> get-branch-name.sh
+          echo 'else' >> get-branch-name.sh
+          echo '    branch_name=$(git rev-parse --abbrev-ref HEAD)' >> get-branch-name.sh
+          echo 'fi' >> get-branch-name.sh
+          echo 'branch_name=$(echo "$branch_name" | sed "s/\//-/g")' >> get-branch-name.sh
+          echo 'echo "Nom de la branche : $branch_name"' >> get-branch-name.sh
+          chmod +x get-branch-name.sh
+
+      - name: Run branch name script
+        run: ./get-branch-name.sh
