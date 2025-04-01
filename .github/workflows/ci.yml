@@ -51,14 +51,14 @@ jobs:
           path: .env
           include-hidden-files: true
 
-  download:
+  deploy:
     runs-on: ubuntu-latest
     needs: get-branch-name
 
     steps:
       - name: Deploy
         run: |
-          curl -X POST "http://161.97.174.134:8000/api/v1/applications/public" \
+          curl -X POST "http://161.97.174.134:8000/api/v1/applications/public \
           --header "Authorization: Bearer Bearer 1|6rnyiYLZtJRXYwiyiVRv3m3ytr6GOGspcTKoC4HTa8e42f6f" \
           --header "Content-Type: application/json" \
           --data '{
@@ -71,11 +71,17 @@ jobs:
             "build_pack": "dockercompose",
             "name": "test",
             "docker_compose_location": "docker-compose.yml",
-            "docker_compose_custom_build_command": "echo "${environment.REGISTRY_PASSWORD}" | docker login ghcr.io -u devofs2 --password-stdin"
+            "docker_compose_location": "docker-compose.yml",
+            "docker_compose_custom_build_command": "echo \\\"$REGISTRY_PASSWORD\\\" | docker login ghcr.io -u devofs2 --password-stdin",
             "docker_compose_custom_start_command": "docker compose up -d",
             "manual_webhook_secret_github": "hello",
             "instant_deploy": true
           }'
+
+
+
+
+
           # curl -X POST "http://161.97.174.134:8000/api/v1/deploy?uuid=" \
           # --header "Authorization: Bearer 1|6rnyiYLZtJRXYwiyiVRv3m3ytr6GOGspcTKoC4HTa8e42f6f" \
           # --header "Content-Type: application/json"
