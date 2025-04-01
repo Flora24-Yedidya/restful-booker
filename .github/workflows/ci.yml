@@ -61,7 +61,9 @@ jobs:
           path: .
 
       - name: Check downloaded .env file
-        run: cat .env
+        run: |
+          cat .env
+          cat .env >> $GITHUB_ENV
 
   another-job:
     runs-on: ubuntu-latest
