@@ -16,10 +16,6 @@ services:
       DB_PORT: "3306"
       MYSQL_ROOT_PASSWORD: admin
       MARIADB_ROOT_PASSWORD: admin
-      REGISTRY_PASSWORD: ${environment.REGISTRY_PASSWORD}
-      x-credentials:
-        ghcr.io:
-          password: $${REGISTRY_PASSWORD}
 
   configurator:
     image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest
@@ -46,13 +42,10 @@ services:
       REDIS_CACHE: redis-cache:6379
       REDIS_QUEUE: redis-queue:6379
       SOCKETIO_PORT: "9000"
-      REGISTRY_PASSWORD: ${environment.REGISTRY_PASSWORD}
     volumes:
       - sites:/home/frappe/frappe-bench/sites
       - logs:/home/frappe/frappe-bench/logs
-    x-credentials:
-        ghcr.io:
-          password: $${REGISTRY_PASSWORD}
+
 
   create-site:
     image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest
@@ -85,11 +78,6 @@ services:
           fi
         done;
         echo "sites/common_site_config.json found";
-    environment:
-      REGISTRY_PASSWORD: ${environment.REGISTRY_PASSWORD}
-    x-credentials:
-        ghcr.io:
-          password: $${REGISTRY_PASSWORD}
 
   db:
     image: mariadb:10.6
@@ -133,15 +121,11 @@ services:
       UPSTREAM_REAL_IP_RECURSIVE: "off"
       PROXY_READ_TIMEOUT: 120
       CLIENT_MAX_BODY_SIZE: 50m
-      REGISTRY_PASSWORD: ${environment.REGISTRY_PASSWORD}
     volumes:
       - sites:/home/frappe/frappe-bench/sites
       - logs:/home/frappe/frappe-bench/logs
     ports:
       - "8081:8080"
-    x-credentials:
-        ghcr.io:
-          password: $${REGISTRY_PASSWORD}
 
   queue-long:
     image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest
@@ -158,11 +142,6 @@ services:
     volumes:
       - sites:/home/frappe/frappe-bench/sites
       - logs:/home/frappe/frappe-bench/logs
-    environment:
-      REGISTRY_PASSWORD: ${environment.REGISTRY_PASSWORD}
-    x-credentials:
-        ghcr.io:
-          password: $${REGISTRY_PASSWORD}
 
   queue-short:
     image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest
@@ -179,11 +158,6 @@ services:
     volumes:
       - sites:/home/frappe/frappe-bench/sites
       - logs:/home/frappe/frappe-bench/logs
-    environment:
-      REGISTRY_PASSWORD: ${environment.REGISTRY_PASSWORD}
-    x-credentials:
-        ghcr.io:
-          password: $${REGISTRY_PASSWORD}
 
   redis-queue:
     image: redis:6.2-alpine
@@ -216,11 +190,6 @@ services:
     volumes:
       - sites:/home/frappe/frappe-bench/sites
       - logs:/home/frappe/frappe-bench/logs
-    environment:
-      REGISTRY_PASSWORD: ${environment.REGISTRY_PASSWORD}
-    x-credentials:
-        ghcr.io:
-          password: $${REGISTRY_PASSWORD}
 
   websocket:
     image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest
@@ -235,11 +204,6 @@ services:
     volumes:
       - sites:/home/frappe/frappe-bench/sites
       - logs:/home/frappe/frappe-bench/logs
-    environment:
-      REGISTRY_PASSWORD: ${environment.REGISTRY_PASSWORD}
-    x-credentials:
-        ghcr.io:
-          password: $${REGISTRY_PASSWORD}
 
 volumes:
   db-data:
