@@ -39,7 +39,7 @@ jobs:
 
       - name: Create .env file with "hello"
         run: |
-          touch .env &&  echo "hello" >> .env
+          echo "hello" >> .env
           cat .env
 
       - name: Upload .env file
@@ -47,6 +47,7 @@ jobs:
         with:
           name: env-file
           path: .env
+          include-hidden-files: true
 
   download:
     runs-on: ubuntu-latest
