@@ -37,6 +37,31 @@ jobs:
         run: |
           echo "La branche est : $BRANCH_NAME"  # Utiliser la variable BRANCH_NAME dans un autre step
 
+      - name: Create .env file with "hello"
+        run: |
+          echo "hello" >> .env
+          cat .env
+
+      - name: Upload .env file
+        uses: actions/upload-artifact@v4
+        with:
+          name: env-file
+          path: .env
+
+  download:
+    runs-on: ubuntu-latest
+    needs: get-branch-name
+
+    steps:
+      - name: Download .env file
+        uses: actions/download-artifact@v4
+        with:
+          name: env-file
+          path: .
+
+      - name: Check downloaded .env file
+        run: cat .env
+
   another-job:
     runs-on: ubuntu-latest
     needs: get-branch-name  # Ce job dépend du job "get-branch-name"
@@ -45,3 +70,4 @@ jobs:
       - name: Use BRANCH_NAME in another job
         run: |
           echo "Dans un autre job, la branche est : $BRANCH_NAME"
+
