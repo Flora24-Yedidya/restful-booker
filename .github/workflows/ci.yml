@@ -66,8 +66,11 @@ jobs:
         run: |
           cat .env
           cat .env >> $GITHUB_ENV
-          echo $BRANCH_NAME
-          echo $REGISTRY_PASSWORD
+
+      - name: Test loaded environment variables
+        run: |
+           echo "REGISTRY_PASSWORD: $REGISTRY_PASSWORD"
+           echo "BRANCH_NAME: $BRANCH_NAME"
 
   another-job:
     runs-on: ubuntu-latest
