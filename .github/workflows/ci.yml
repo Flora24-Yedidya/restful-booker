@@ -39,7 +39,9 @@ jobs:
 
       - name: Create .env file with "hello"
         run: |
-          echo "hello" >> .env
+          echo "IMAGE_NAME=image:latest" >> .env
+          echo "REGISTRY_PASSWORD=hello" >> .env
+          echo "BRANCH_NAME=ci" >> .env
           cat .env
 
       - name: Upload .env file
