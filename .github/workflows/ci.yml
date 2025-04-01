@@ -58,25 +58,24 @@ jobs:
     steps:
       - name: Deploy
         run: |
-          curl -X POST "http://161.97.174.134:8000/api/v1/applications/public \
-          --header "Authorization: Bearer Bearer 1|6rnyiYLZtJRXYwiyiVRv3m3ytr6GOGspcTKoC4HTa8e42f6f" \
-          --header "Content-Type: application/json" \
-          --data '{
-            "project_uuid": "v0ggs00w4kgskcksgkgkk8oc",
-            "server_uuid": "g04w4sg0csocwgocwgkgg44k",
-            "environment_name": "development",
-            "git_repository": "https://github.com/Flora24-Yedidya/restful-booker.git",
-            "git_branch": "feature/cicd",
-            "ports_exposes": "8081",
-            "build_pack": "dockercompose",
-            "name": "test",
-            "docker_compose_location": "docker-compose.yml",
-            "docker_compose_location": "docker-compose.yml",
-            "docker_compose_custom_build_command": "echo \\\"$REGISTRY_PASSWORD\\\" | docker login ghcr.io -u devofs2 --password-stdin",
-            "docker_compose_custom_start_command": "docker compose up -d",
-            "manual_webhook_secret_github": "hello",
-            "instant_deploy": true
-          }'
+          curl -X POST "http://161.97.174.134:8000/api/v1/applications/public" \
+            --header "Authorization: Bearer 1|6rnyiYLZtJRXYwiyiVRv3m3ytr6GOGspcTKoC4HTa8e42f6f" \
+            --header "Content-Type: application/json" \
+            --data '{
+              "project_uuid": "v0ggs00w4kgskcksgkgkk8oc",
+              "server_uuid": "g04w4sg0csocwgocwgkgg44k",
+              "environment_name": "development",
+              "git_repository": "https://github.com/Flora24-Yedidya/restful-booker.git",
+              "git_branch": "feature/cicd",
+              "ports_exposes": "8081",
+              "build_pack": "dockercompose",
+              "name": "test",
+              "docker_compose_location": "docker-compose.yml",
+              "docker_compose_custom_build_command": "echo \\\"$REGISTRY_PASSWORD\\\" | docker login ghcr.io -u devofs2 --password-stdin",
+              "docker_compose_custom_start_command": "docker compose up -d",
+              "manual_webhook_secret_github": "hello",
+              "instant_deploy": true
+            }'
 
 
 
