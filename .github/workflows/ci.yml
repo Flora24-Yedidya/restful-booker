@@ -57,6 +57,10 @@ jobs:
       - name: Check app
         run: ./.github/scripts/check_and_deploy.sh $COOLIFY_URL $PROJECT_UUID $BRANCH_NAME
 
+      - name: Set APP_UUID output
+      id: set-app-uuid
+      run: echo "APP_UUID=$APP_UUID" >> $GITHUB_ENV
+
   track-deployment:
     runs-on: ubuntu-latest
     needs: deploy-app
@@ -76,7 +80,8 @@ jobs:
         env:
           COOLIFY_URL: https://coolify.ofs.bj
           COOLIFY_API_KEY: 1|6rnyiYLZtJRXYwiyiVRv3m3ytr6GOGspcTKoC4HTa8e42f6f
-          APP_UUID: ${{ env.APP_UUID }}
+          APP_UUID: ${{ needs.deploy-app.outputs.APP_UUID }}
+
 
       - name: Update GitHub Deployment Status (Success)
         if: env.deployment_status == 'success'
