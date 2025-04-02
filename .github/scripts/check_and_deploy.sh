@@ -2,7 +2,7 @@
 
 # Vérification des paramètres
 if [ $# -ne 3 ]; then
-  echo "Usage: $0 <COOLIFY_URL> <BRANCH_NAME>"
+  echo "Usage: $0 <COOLIFY_URL> <PROJECT_UUID> <BRANCH_NAME>"
   exit 1
 fi
 
@@ -17,28 +17,29 @@ RESPONSE=$(curl -s -X GET "$COOLIFY_URL/api/v1/applications" \
 
 # Vérifier si la requête a réussi
 if [[ -z "$RESPONSE" || "$RESPONSE" == "null" ]]; then
-  echo "Erreur: Impossible de récupérer la liste des applications."
+  echo "❌ Erreur: Impossible de récupérer la liste des applications."
   exit 1
 fi
 
 # Extraire l'UUID de l'application correspondant à la branche
 APP_UUID=$(echo "$RESPONSE" | jq -r --arg BRANCH "$BRANCH_NAME" '.[] | select(.name == $BRANCH) | .uuid')
 
-# Si l'UUID n'a pas été trouvé
+# Si l'UUID n'a pas été trouvé, créer l'application
 if [[ -z "$APP_UUID" || "$APP_UUID" == "null" ]]; then
-  echo "Aucune application trouvée pour la branche: $BRANCH_NAME"
-  echo "Lancement de la création de l'application..."
-  
-  # Appel du script de création d'application
- ./.github/scripts/create_application.sh "$PROJECT_UUID" "$BRANCH_NAME"
-  
-  if [[ $? -ne 0 ]]; then
-    echo "Erreur lors de la création de l'application."
+  echo "🔍 Aucune application trouvée pour la branche: $BRANCH_NAME"
+  echo "🚀 Lancement de la création de l'application..."
+
+  APP_UUID=$(./.github/scripts/create_application.sh "$PROJECT_UUID" "$BRANCH_NAME")
+
+  if [[ -z "$APP_UUID" || "$APP_UUID" == "null" ]]; then
+    echo "❌ Erreur: Impossible de créer l'application."
     exit 1
   fi
-  
-  echo "Création de l'application terminée."
+
+  echo "✅ Création de l'application réussie. UUID: $APP_UUID"
 else
-  echo "L'application pour la branche '$BRANCH_NAME' existe déjà. UUID = $APP_UUID"
-  echo "Prochain job: déploiement"
+  echo "✅ L'application pour la branche '$BRANCH_NAME' existe déjà. UUID: $APP_UUID"
 fi
+
+# Retourner l'UUID pour les prochaines étapes
+echo "$APP_UUID"
