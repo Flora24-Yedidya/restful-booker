@@ -55,8 +55,8 @@ jobs:
         run: chmod +x .github/scripts/*.sh
 
       - name: Check app
-        run: .github/check_coolify_app.sh $COOLIFY_URL $BRANCH_NAME
-        
+        run: ./.github/check_coolify_app.sh $COOLIFY_URL $BRANCH_NAME
+
       # - name: Create application on Coolify
       #   #if: steps.check_app.outputs.app_exists == 'false'
       #   id: create_app
@@ -68,12 +68,6 @@ jobs:
 #   --header "Authorization: Bearer 1|6rnyiYLZtJRXYwiyiVRv3m3ytr6GOGspcTKoC4HTa8e42f6f" \
 #   --header "Content-Type: application/json"
 
-      # - name: Create application on Coolify
-      #   #if: steps.check_app.outputs.app_exists == 'false'
-      #   id: create_app
-      #   run: |
-      #     APP_UUID=$(./.github/scripts/create_application.sh $PROJECT_UUID $BRANCH_NAME)
-      #     echo "APP_UUID=$APP_UUID" >> $GITHUB_ENV
     
       # - name: Deploy application
       #   run: ./.github/scripts/deploy_application.sh ${{ env.APP_UUID }}
