@@ -41,7 +41,7 @@ jobs:
     needs: build-and-push
     env:
       COOLIFY_URL: https://coolify.ofs.bj
-      COOLIFY_API_KEY: "1|6rnyiYLZtJRXYwiyiVRv3m3ytr6GOGspcTKoC4HTa8e42f6f"
+      COOLIFY_API_KEY: 1|6rnyiYLZtJRXYwiyiVRv3m3ytr6GOGspcTKoC4HTa8e42f6f
       PROJECT_UUID: "v0ggs00w4kgskcksgkgkk8oc"
     steps:
       - name: Checkout repository
