@@ -57,27 +57,44 @@ jobs:
       - name: Check app
         run: ./.github/scripts/check_and_deploy.sh $COOLIFY_URL $PROJECT_UUID $BRANCH_NAME
 
+  track-deployment:
+    runs-on: ubuntu-latest
+    needs: deploy-app
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-      # - name: Create application on Coolify
-      #   #if: steps.check_app.outputs.app_exists == 'false'
-      #   id: create_app
-      #   run: |
-      #     APP_UUID=$(./.github/scripts/create_application.sh $PROJECT_UUID $BRANCH_NAME)
-      #     echo "APP_UUID=$APP_UUID" >> $GITHUB_ENV
+      - name: Install jq
+        run: sudo apt-get install jq -y
 
-# curl "http://161.97.174.134:8000/api/v1/projects/v0ggs00w4kgskcksgkgkk8oc/development" \
-#   --header "Authorization: Bearer 1|6rnyiYLZtJRXYwiyiVRv3m3ytr6GOGspcTKoC4HTa8e42f6f" \
-#   --header "Content-Type: application/json"
+      - name: Set execute permissions
+        run: chmod +x .github/scripts/check_deployment_status.sh
 
-    
-      # - name: Deploy application
-      #   run: ./.github/scripts/deploy_application.sh ${{ env.APP_UUID }}
-    
+      - name: Monitor Coolify Deployment
+        id: monitor
+        run: ./.github/scripts/check_deployment_status.sh $COOLIFY_URL $COOLIFY_API_KEY $APP_UUID
+        env:
+          COOLIFY_URL: https://coolify.ofs.bj
+          COOLIFY_API_KEY: 1|6rnyiYLZtJRXYwiyiVRv3m3ytr6GOGspcTKoC4HTa8e42f6f
+          APP_UUID: ${{ env.APP_UUID }}
 
+      - name: Update GitHub Deployment Status (Success)
+        if: env.deployment_status == 'success'
+        run: |
+          curl -X POST \
+            -H "Authorization: token ${{ secrets.GITHUB_PAT }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            https://api.github.com/repos/${{ github.repository }}/statuses/${{ github.sha }} \
+            -d '{"state": "success", "description": "✅ Application déployée avec succès", "context": "Deployment"}'
 
-
-
-
+      - name: Update GitHub Deployment Status (Failure)
+        if: env.deployment_status == 'failure'
+        run: |
+          curl -X POST \
+            -H "Authorization: token ${{ secrets.GITHUB_PAT }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            https://api.github.com/repos/${{ github.repository }}/statuses/${{ github.sha }} \
+            -d '{"state": "failure", "description": "❌ Échec du déploiement", "context": "Deployment"}'
 
 
 
