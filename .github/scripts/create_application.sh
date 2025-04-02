@@ -5,7 +5,7 @@ BRANCH_NAME=$2
 
 # Appel API pour créer l'application
 RESPONSE=$(curl -s -X POST "$COOLIFY_URL/api/v1/applications/private-deploy-key" \
-  --header "Authorization: Bearer $COOLIFY_API_KEY" \
+  --header "Authorization: Bearer '"$COOLIFY_API_KEY"'" \
   --header "Content-Type: application/json" \
   --data '{
     "project_uuid": "'"$PROJECT_UUID"'",
