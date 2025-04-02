@@ -7,7 +7,8 @@ if [ $# -ne 2 ]; then
 fi
 
 COOLIFY_URL=$1
-BRANCH_NAME=$2
+PROJECT_UUID=$2
+BRANCH_NAME=$3
 
 # Appel API pour récupérer la liste des applications
 RESPONSE=$(curl -s -X GET "$COOLIFY_URL/api/v1/applications" \
@@ -29,7 +30,7 @@ if [[ -z "$APP_UUID" || "$APP_UUID" == "null" ]]; then
   echo "Lancement de la création de l'application..."
   
   # Appel du script de création d'application
-  ./.github/scripts/create_application.sh "$PROJECT_UUID" "$COOLIFY_URL" "$BRANCH_NAME"
+ ./.github/scripts/create_application.sh "$PROJECT_UUID" "$BRANCH_NAME"
   
   if [[ $? -ne 0 ]]; then
     echo "Erreur lors de la création de l'application."

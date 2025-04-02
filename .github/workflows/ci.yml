@@ -55,7 +55,7 @@ jobs:
         run: chmod +x .github/scripts/*.sh
 
       - name: Check app
-        run: ./.github/scripts/create_application.sh "$PROJECT_UUID" "$BRANCH_NAME"
+        run: ./.github/scripts/check_and_deploy.sh $COOLIFY_URL $PROJECT_UUID $BRANCH_NAME
 
 
       # - name: Create application on Coolify
