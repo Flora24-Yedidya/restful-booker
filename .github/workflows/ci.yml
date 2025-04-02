@@ -55,7 +55,7 @@ jobs:
         run: chmod +x .github/scripts/*.sh
 
       - name: Check app
-        run: ./.github/scripts/check_coolify_app.sh $COOLIFY_URL $BRANCH_NAME
+        run: ./.github/scripts/check_and_deploy.sh $COOLIFY_URL $BRANCH_NAME
 
       # - name: Create application on Coolify
       #   #if: steps.check_app.outputs.app_exists == 'false'
