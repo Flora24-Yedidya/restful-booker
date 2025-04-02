@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Vérification des paramètres
-if [ $# -ne 2 ]; then
+if [ $# -ne 3 ]; then
   echo "Usage: $0 <COOLIFY_URL> <BRANCH_NAME>"
   exit 1
 fi
