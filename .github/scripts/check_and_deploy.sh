@@ -48,5 +48,4 @@ else
   echo "✅ L'application pour la branche '$BRANCH_NAME' existe déjà. UUID: $APP_UUID"
 fi
 
-# Retourner l'UUID pour le workflow GitHub Actions
-echo "$APP_UUID"
+echo "APP_UUID=$APP_UUID" >> "$GITHUB_ENV"

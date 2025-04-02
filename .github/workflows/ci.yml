@@ -60,20 +60,13 @@ jobs:
 
       - name: Check app
         run: |
-          APP_UUID=$(./.github/scripts/check_and_deploy.sh $COOLIFY_URL $PROJECT_UUID $BRANCH_NAME)
-          # Vérifier si APP_UUID est valide avant d'ajouter aux variables d'environnement
-          if [[ -n "$APP_UUID" && "$APP_UUID" != "null" ]]; then
-            echo "APP_UUID=$APP_UUID" >> $GITHUB_ENV
-            echo "APP_UUID=$APP_UUID" >> $GITHUB_OUTPUT
-            echo "✅ Application prête pour le déploiement : $APP_UUID"
-          else
-            echo "❌ Erreur : UUID invalide ou vide."
-            exit 1
-          fi
-        shell: bash
-  #         echo "APP_UUID=$APP_UUID" >> $GITHUB_ENV
-  #         echo "::set-output name=APP_UUID::$APP_UUID"
-  # #        ./.github/scripts/check_and_deploy.sh $COOLIFY_URL $PROJECT_UUID $BRANCH_NAME
+          ./.github/scripts/check_and_deploy.sh $COOLIFY_URL $PROJECT_UUID $BRANCH_NAME
+          echo "APP_UUID=$APP_UUID" >> "$GITHUB_ENV"
+
+      - name: Afficher l'UUID de l'application
+        run: |
+          echo "L'UUID de l'application est: $APP_UUID"
+          echo "✅ Application prête pour le déploiement : $APP_UUID"
 
 
   # track-deployment:
