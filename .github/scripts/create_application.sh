@@ -18,7 +18,7 @@ RESPONSE=$(curl -s -X POST "$COOLIFY_URL/api/v1/applications/private-deploy-key"
     "build_pack": "dockercompose",
     "name": "'"$BRANCH_NAME"'",
     "docker_compose_location": "docker-compose.yml",
-    "docker_compose_custom_build_command": "echo hello | docker login ghcr.io -u devofs2 --password-stdin && docker pull docker pull $IMAGE_NAME "
+    "docker_compose_custom_build_command": "echo hello | docker login ghcr.io -u devofs2 --password-stdin && docker pull docker pull $IMAGE_NAME",
     "docker_compose_custom_start_command": "docker compose up -d",
     "manual_webhook_secret_github": "hello",
     "instant_deploy": true
