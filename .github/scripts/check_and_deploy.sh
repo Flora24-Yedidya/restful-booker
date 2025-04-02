@@ -29,7 +29,8 @@ if [[ -z "$APP_UUID" || "$APP_UUID" == "null" ]]; then
   echo "Lancement de la création de l'application..."
   
   # Appel du script de création d'application
-  ./create_application.sh "$COOLIFY_URL" "$BRANCH_NAME"
+  pwd && ls -la
+  #./.githubcreate_application.sh "$COOLIFY_URL" "$BRANCH_NAME"
   
   if [[ $? -ne 0 ]]; then
     echo "Erreur lors de la création de l'application."
