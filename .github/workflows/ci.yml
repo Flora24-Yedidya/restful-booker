@@ -60,11 +60,31 @@ jobs:
           APP_UUID=$(./.github/scripts/check_and_deploy.sh $COOLIFY_URL $PROJECT_UUID $BRANCH_NAME)
           echo "APP_UUID=$APP_UUID"
 
-      # - name: Afficher l'UUID de l'application
-      #   run: |
-      #     echo "L'UUID de l'application est: $APP_UUID"
-      #     echo "✅ Application prête pour le déploiement : $APP_UUID"
-
+          - name: Set execute permissions
+          run: chmod +x .github/scripts/*.sh
+    
+      - name: Check app
+        id: check_app
+        run: |
+          # Capture the output of check_and_deploy.sh and extract only the UUID
+          APP_UUID=$(./.github/scripts/check_and_deploy.sh $COOLIFY_URL $PROJECT_UUID $BRANCH_NAME | grep -oP '(?<=UUID: )[a-zA-Z0-9]+')
+          
+          # Debugging: Check what is captured in APP_UUID
+          echo "APP_UUID after extraction: $APP_UUID"
+          
+          # Make sure APP_UUID is not empty or invalid
+          if [[ -z "$APP_UUID" || "$APP_UUID" == "null" ]]; then
+            echo "Erreur: L'UUID est invalide"
+            exit 1
+          fi
+  
+          # Set the APP_UUID to GitHub environment variable
+          echo "APP_UUID=$APP_UUID" >> $GITHUB_ENV
+  
+      - name: Afficher l'UUID de l'application
+        run: |
+          echo "L'UUID de l'application est: $APP_UUID"
+          echo "✅ Application prête pour le déploiement : $APP_UUID"
 
   # track-deployment:
   #   runs-on: ubuntu-latest
