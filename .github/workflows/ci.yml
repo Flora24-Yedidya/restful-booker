@@ -67,15 +67,10 @@ jobs:
         id: check_app
         run: |
           # Capture l'UUID de la sortie du script
-          APP_UUID=$(./.github/scripts/check_and_deploy.sh $COOLIFY_URL $PROJECT_UUID $BRANCH_NAME)
+          RESPONSE=$(./.github/scripts/check_and_deploy.sh $COOLIFY_URL $PROJECT_UUID $BRANCH_NAME)
           
           # Ajouter l'UUID à GITHUB_ENV
-          echo "APP_UUID=$APP_UUID" >> $GITHUB_ENV
-
-      - name: Afficher l'UUID de l'application
-        run: |
-          echo "L'UUID de l'application est: $APP_UUID"
-          echo "✅ Application prête pour le déploiement : $APP_UUID"
+          echo "APP_UUID=$RESPONSE" 
 
   # track-deployment:
   #   runs-on: ubuntu-latest
