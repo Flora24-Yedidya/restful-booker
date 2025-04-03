@@ -67,9 +67,7 @@ jobs:
           echo "APP_UUID=$APP_UUID" >> $GITHUB_ENV  # Ajouter dans l'environnement
 
       - name: Deploy the application
-        run: |
-          pwd&& ls -la 
-          #./.github/scripts/deploy_application.sh $APP_UUID $BRANCH_NAME
+        run: ./.github/scripts/deploy_application.sh $APP_UUID $BRANCH_NAME
 
       
 
