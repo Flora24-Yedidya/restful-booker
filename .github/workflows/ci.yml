@@ -53,7 +53,7 @@ jobs:
         run: sudo apt-get install jq -y
       
       - name: Set execute permissions
-        run: chmod +x .github/scripts/
+        run:  chmod +x .github/scripts/*.sh
     
       - name: Check app
         id: check_app
@@ -67,9 +67,7 @@ jobs:
           echo "APP_UUID=$APP_UUID" >> $GITHUB_ENV  # Ajouter dans l'environnement
 
       - name: Deploy the application
-        run: |
-          # Déployer l'application avec le nom de la branche
-          ./.github/scripts/deploy_application.sh $APP_UUID $BRANCH_NAME
+        run: ./.github/scripts/deploy_application.sh $APP_UUID $BRANCH_NAME
 
       
 
