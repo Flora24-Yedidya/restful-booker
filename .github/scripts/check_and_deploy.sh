@@ -30,11 +30,12 @@ fi
 # Extraire l'UUID de l'application correspondant à la branche
 APP_UUID=$(echo "$RESPONSE" | jq -r --arg BRANCH "$BRANCH_NAME" '.[] | select(.name == $BRANCH) | .uuid')
 
-# Si l'UUID n'a pas été trouvé, créer l'application
+# Si l'UUID n'a pas été trouvé
 if [[ -z "$APP_UUID" || "$APP_UUID" == "null" ]]; then
-  # Créer l'application et obtenir le nouvel UUID
+  # Création de l'application si elle n'existe pas
   APP_UUID=$(./.github/scripts/create_application.sh "$PROJECT_UUID" "$BRANCH_NAME")
 
+  # Vérification que l'UUID a bien été créé
   if [[ -z "$APP_UUID" || "$APP_UUID" == "null" ]]; then
     echo "Erreur: Échec de la création de l'application."
     exit 1
