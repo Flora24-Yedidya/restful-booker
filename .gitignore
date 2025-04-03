@@ -18,5 +18,3 @@ __pycache__
 node_modules/
 .backportrc.json
 .scannerwork/
-check_coolify_app.sh
-deploy_application.sh

@@ -22,4 +22,4 @@ if [[ "$RESPONSE" == *"error"* ]]; then
 fi
 
 # Afficher un message de confirmation
-echo "Déploiement lancé pour l'application avec UUID: $APP_UUID et nom: $APP_NAME"
+echo "Déploiement lancé sur la branche $APP_NAME"
