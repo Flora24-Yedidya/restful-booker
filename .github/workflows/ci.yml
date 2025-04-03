@@ -40,13 +40,10 @@ jobs:
     runs-on: ubuntu-latest
     needs: build-and-push
     env:
-      COOLIFY_URL: https://coolify.ofs.bj
+      COOLIFY_URL: https://coolify2.ofs.bj
       COOLIFY_API_KEY: 1|6rnyiYLZtJRXYwiyiVRv3m3ytr6GOGspcTKoC4HTa8e42f6f
       PROJECT_UUID: "v0ggs00w4kgskcksgkgkk8oc"
       BRANCH_NAME: feature/cicd
-
-    outputs:
-      APP_UUID: ${{ steps.check-app.outputs.APP_UUID }}
 
     steps:
       - name: Checkout repository
@@ -61,12 +58,12 @@ jobs:
       - name: Check app
         run: |
           ./.github/scripts/check_and_deploy.sh $COOLIFY_URL $PROJECT_UUID $BRANCH_NAME
-          echo "APP_UUID=$APP_UUID" >> "$GITHUB_ENV" 
+          echo "APP_UUID=$APP_UUID"
 
-      - name: Afficher l'UUID de l'application
-        run: |
-          echo "L'UUID de l'application est: $APP_UUID"
-          echo "✅ Application prête pour le déploiement : $APP_UUID"
+      # - name: Afficher l'UUID de l'application
+      #   run: |
+      #     echo "L'UUID de l'application est: $APP_UUID"
+      #     echo "✅ Application prête pour le déploiement : $APP_UUID"
 
 
   # track-deployment:
