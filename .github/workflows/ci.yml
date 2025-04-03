@@ -63,6 +63,15 @@ jobs:
           
           # Ajouter l'UUID à GITHUB_ENV
           echo "APP_UUID=$RESPONSE" 
+          # Ajouter l'UUID à GITHUB_ENV
+          echo "APP_UUID=$APP_UUID" >> $GITHUB_ENV  # Ajouter dans l'environnement
+
+      - name: Deploy the application
+        run: |
+          # Déployer l'application avec le nom de la branche
+          ./.github/scripts/deploy_application.sh $APP_UUID $BRANCH_NAME
+
+      
 
   # track-deployment:
   #   runs-on: ubuntu-latest
