@@ -54,14 +54,6 @@ jobs:
       
       - name: Set execute permissions
         run: chmod +x .github/scripts/*.sh
-
-      - name: Check app
-        run: |
-          APP_UUID=$(./.github/scripts/check_and_deploy.sh $COOLIFY_URL $PROJECT_UUID $BRANCH_NAME)
-          echo "APP_UUID=$APP_UUID"
-
-          - name: Set execute permissions
-          run: chmod +x .github/scripts/*.sh
     
       - name: Check app
         id: check_app
