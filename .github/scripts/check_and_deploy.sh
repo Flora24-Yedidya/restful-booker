@@ -53,5 +53,5 @@ if [[ -z "$APP_UUID" || "$APP_UUID" == "null" ]]; then
 else
   echo "✅ L'application pour la branche '$BRANCH_NAME' existe déjà. UUID: $APP_UUID"
 fi
-
-echo "APP_UUID=$APP_UUID"
+# Retourner l'UUID pour qu'il soit capturé dans le pipeline GitHub
+echo "$APP_UUID"
