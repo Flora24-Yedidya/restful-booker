@@ -57,7 +57,7 @@ jobs:
 
       - name: Check app
         run: |
-          ./.github/scripts/check_and_deploy.sh $COOLIFY_URL $PROJECT_UUID $BRANCH_NAME
+          APP_UUID=(./.github/scripts/check_and_deploy.sh $COOLIFY_URL $PROJECT_UUID $BRANCH_NAME)
           echo "APP_UUID=$APP_UUID"
 
       # - name: Afficher l'UUID de l'application
