@@ -1,12 +1,9 @@
-#name: Get Branch Name
+name: CI/CD
 
 on:
   push:
     branches:
-      - '**'  # Pour toutes les branches
-  pull_request:
-    branches:
-      - '**'  # Pour toutes les PR
+      - '*'
 
 jobs:
   build-and-push:
@@ -19,22 +16,51 @@ jobs:
 
       - name: Get Branch Name
         run: |
-          # Récupérer le nom de la branche
           if [[ -n "$GITHUB_HEAD_REF" ]]; then
             branch_name="${GITHUB_HEAD_REF}"
           else
             branch_name=$(git rev-parse --abbrev-ref HEAD)
           fi
 
-          # Remplacer "/" par "-" pour le nom de l'image Docker
           branch_sanitize=$(echo "$branch_name" | sed "s/\//-/g")
 
-          # Définir les variables d'environnement
-          echo "Nom de la branche : $branch_name"
-          echo "Branch_sanitize : $branch_sanitize"
           echo "BRANCH_NAME=$branch_name" >> $GITHUB_ENV
           echo "BRANCH_SANITIZE=$branch_sanitize" >> $GITHUB_ENV
+          - name: Log in to GitHub Container Registry
+          uses: docker/login-action@v2
+          with:
+            registry: ghcr.io
+            username: ${{ github.actor }}
+            password: ${{ secrets.GHCR_TOKEN }}
+  
+      - name: Build & Push Docker Image
+        run: |
+          #sed -i "s|\${AUTH_TOKEN}|${{ secrets.AUTH_TOKEN }}|g" ./resources/apps.json
+          IMAGE_NAME="ghcr.io/devofs2/pro_erpnext_$BRANCH_SANITIZE:latest"
+          echo "Building and pushing image: $IMAGE_NAME"
+          echo "IMAGE_NAME=$IMAGE_NAME" >> .env
+          echo "REGISTRY_PASSWORD=${{ secrets.GHCR_TOKEN }}" >> .env
+          echo "REGISTRY_OWNER=${{ github.repository_owner }}" >> .env
+          echo "BRANCH_NAME=$BRANCH_NAME" >> .env
+          cat .env
 
+          # Remplacement des variables dans docker-compose.yml
+          sed -i "s|\${IMAGE_NAME}|$IMAGE_NAME|g" docker-compose.yml
+          # sed -i "s|\${REGISTRY_PASSWORD}|${{ secrets.GHCR_TOKEN }}|g" docker-compose.yml
+        
+          # docker build --build-arg AUTH_TOKEN=${{ secrets.AUTH_TOKEN }}  -t $IMAGE_NAME .
+          # docker push $IMAGE_NAME
+
+      - name: Upload Docker Compose & Env Files
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-compose-files
+          path: |
+            docker-compose.yml
+            .env
+            .github/scripts/  
+          overwrite: true
+          include-hidden-files: true
 
   deploy-app:
     runs-on: ubuntu-latest
@@ -43,39 +69,38 @@ jobs:
       COOLIFY_URL: https://coolify2.ofs.bj
       COOLIFY_API_KEY: 1|6rnyiYLZtJRXYwiyiVRv3m3ytr6GOGspcTKoC4HTa8e42f6f
       PROJECT_UUID: "v0ggs00w4kgskcksgkgkk8oc"
-      BRANCH_NAME: feature/cicd
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      - name: Download Docker Compose & Env Files
+        uses: actions/download-artifact@v4
+        with:
+          name: docker-compose-files
+          path: .
       
-      - name: Install jq
-        run: sudo apt-get install jq -y
+      - name: Install dependencies
+        run: sudo apt-get install -y jq
 
       - name: Load environment variables
         run: |
-          set -a
-          source .env
-          set +a
+          pwd && ls -la 
+          cat .env
+          # cat .env >> $GITHUB_ENV
+          # echo "The IMAGE_NAME is: $IMAGE_NAME"
 
-      - name: Set execute permissions
-        run: chmod +x .github/scripts/*.sh
+      # - name: Replace variables in create.sh
+      #   run: |
+      #     sed -i "s|\${REGISTRY_PASSWORD}|${{ secrets.GHCR_TOKEN }}|g" .github/scripts/create_application.sh
+      #     sed -i "s|\$GHRC_OWNER|devofs2|g" .github/scripts/create_application.sh
+      #     sed -i "s|\$IMAGE_NAME|ghcr.io/devofs2/pro_erpnext_feature-cicd:latest|g" .github/scripts/create_application.sh
 
-      - name: Replace variables in create.sh
-        run: |
-          sed -i "s|\$REGISTRY_PASSWORD|${REGISTRY_PASSWORD}|g" .github/scripts/create_application.sh
-          sed -i "s|\$GHRC_OWNER|${GHRC_OWNER}|g" .github/scripts/create_application.sh
-          sed -i "s|\$IMAGE_NAME|${IMAGE_NAME}|g" .github/scripts/create_application.sh
-      
-      - name: Debug environment variables
-        run: |
-          echo "REGISTRY_PASSWORD=${REGISTRY_PASSWORD}"
-          echo "GHRC_OWNER=${GHRC_OWNER}"
-          echo "IMAGE_NAME=${IMAGE_NAME}"
-          cat .github/scripts/create_application.sh
+      # - name: Set execute permissions
+      #   run: chmod +x .github/scripts/*.sh
+      # - name: Debug environment variables
+      #   run: |
+      #     cat .github/scripts/create_application.sh
 
-      - name: Run deployment script
-        run: .github/scripts/create_application.sh "$PROJECT_UUID" "$BRANCH_NAME"
+      # - name: Run deployment script
+      #   run: .github/scripts/create_application.sh "$PROJECT_UUID" "$BRANCH_NAME"
+
       
 
       
