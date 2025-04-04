@@ -40,12 +40,7 @@ jobs:
           echo "REGISTRY_PASSWORD=${{ secrets.GHCR_TOKEN }}" >> .env
           echo "REGISTRY_OWNER=${{ github.repository_owner }}" >> .env
           echo "BRANCH_NAME=$BRANCH_NAME" >> .env
-          cat .env
-
-          # Remplacement des variables dans docker-compose.yml
-          sed -i "s|\${IMAGE_NAME}|$IMAGE_NAME|g" docker-compose.yml
-          # sed -i "s|\${REGISTRY_PASSWORD}|${{ secrets.GHCR_TOKEN }}|g" docker-compose.yml
-      
+          cat .env      
 
       - name: Upload Docker Compose & Env Files
         uses: actions/upload-artifact@v4
@@ -81,15 +76,19 @@ jobs:
           source .env
           set +o allexport
 
+      - name: Display loaded environment variables
+        run: |
+          echo "REGISTRY_PASSWORD=$REGISTRY_PASSWORD"
+          echo "GHRC_OWNER=$REGISTRY_OWNER"
+          echo "IMAGE_NAME=$IMAGE_NAME"
+        
       - name: Replace variables in script
         run: |
           sed -i "s|\${REGISTRY_PASSWORD}|$REGISTRY_PASSWORD|g" .github/scripts/create_application.sh
-          sed -i "s|\${GHRC_OWNER}|$GHRC_OWNER|g" .github/scripts/create_application.sh
+          sed -i "s|\${GHRC_OWNER}|$REGISTRY_OWNER|g" .github/scripts/create_application.sh
           sed -i "s|\${IMAGE_NAME}|$IMAGE_NAME|g" .github/scripts/create_application.sh
-
-      - name: Display the updated script
-        run: |
           cat .github/scripts/create_application.sh
+
 
       # - name: Replace variables in create.sh
       #   run: |
