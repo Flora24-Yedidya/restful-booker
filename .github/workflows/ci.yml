@@ -56,10 +56,6 @@ jobs:
   deploy-app:
     runs-on: ubuntu-latest
     needs: build-and-push
-    env:
-      COOLIFY_URL: https://coolify2.ofs.bj
-      COOLIFY_API_KEY: 1|6rnyiYLZtJRXYwiyiVRv3m3ytr6GOGspcTKoC4HTa8e42f6f
-      PROJECT_UUID: "v0ggs00w4kgskcksgkgkk8oc"
     steps:
       - name: Download Docker Compose & Env Files
         uses: actions/download-artifact@v4
