@@ -61,17 +61,7 @@ jobs:
           sed -i "s|\$REGISTRY_PASSWORD||${{env.REGISTRY_PASSWORD }}" .github/scripts/create_application.sh
           sed -i "s|\$GHRC_OWNER|${{env.GHRC_OWNER }}|g" .github/scripts/create_application.sh
           sed -i "s|\$IMAGE_NAME|${{env.IMAGE_NAME }}|g" .github/scripts/create_application.sh
-
-      - name: Check app
-        id: check_app
-        run: |
-          # Capture l'UUID de la sortie du script
-          RESPONSE=$(./.github/scripts/check_and_deploy.sh $COOLIFY_URL $PROJECT_UUID $BRANCH_NAME)
-          echo "APP_UUID=$RESPONSE" 
-          echo "APP_UUID=$RESPONSE" >> $GITHUB_ENV
-
-      - name: Deploy the application
-        run: ./.github/scripts/deploy_application.sh $APP_UUID $BRANCH_NAME
+          cat .github/scripts/create_application.sh
 
       
 
