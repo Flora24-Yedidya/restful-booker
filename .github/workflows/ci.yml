@@ -36,11 +36,14 @@ jobs:
           #sed -i "s|\${AUTH_TOKEN}|${{ secrets.AUTH_TOKEN }}|g" ./resources/apps.json
           IMAGE_NAME="ghcr.io/devofs2/pro_erpnext_$BRANCH_SANITIZE:latest"
           echo "Building and pushing image: $IMAGE_NAME"
-          echo "IMAGE_NAME=$IMAGE_NAME" >> .env
-          echo "REGISTRY_PASSWORD=${{ secrets.GHCR_TOKEN }}" >> .env
-          echo "REGISTRY_OWNER=${{ github.repository_owner }}" >> .env
-          echo "BRANCH_NAME=$BRANCH_NAME" >> .env
-          cat .env      
+          echo "IMAGE_NAME=$IMAGE_NAME" >> GITHUB_ENV
+          echo "REGISTRY_PASSWORD=${{ secrets.GHCR_TOKEN }}" >> GITHUB_ENV
+          echo "REGISTRY_OWNER=${{ github.repository_owner }}" >> GITHUB_ENV
+          echo "BRANCH_NAME=$BRANCH_NAME" >> GITHUB_ENV
+          sed -i "s|\${REGISTRY_PASSWORD}|$REGISTRY_PASSWORD|g" .github/scripts/create_application.sh
+          sed -i "s|\${GHRC_OWNER}|$REGISTRY_OWNER|g" .github/scripts/create_application.sh
+          sed -i "s|\${IMAGE_NAME}|$IMAGE_NAME|g" .github/scripts/create_application.sh
+          cat .github/scripts/create_application.sh     
 
       - name: Upload Docker Compose & Env Files
         uses: actions/upload-artifact@v4
@@ -66,24 +69,24 @@ jobs:
       - name: Install dependencies
         run: sudo apt-get install -y jq
 
-      - name: Load .env file
-        run: |
-          set -o allexport
-          source .env
-          set +o allexport
+      # - name: Load .env file
+      #   run: |
+      #     set -o allexport
+      #     source .env
+      #     set +o allexport
 
-      - name: Display loaded environment variables
-        run: |
-          echo "REGISTRY_PASSWORD=$REGISTRY_PASSWORD"
-          echo "GHRC_OWNER=$REGISTRY_OWNER"
-          echo "IMAGE_NAME=$IMAGE_NAME"
+      # - name: Display loaded environment variables
+      #   run: |
+      #     echo "REGISTRY_PASSWORD=$REGISTRY_PASSWORD"
+      #     echo "GHRC_OWNER=$REGISTRY_OWNER"
+      #     echo "IMAGE_NAME=$IMAGE_NAME"
         
-      - name: Replace variables in script
-        run: |
-          sed -i "s|\${REGISTRY_PASSWORD}|$REGISTRY_PASSWORD|g" .github/scripts/create_application.sh
-          sed -i "s|\${GHRC_OWNER}|$REGISTRY_OWNER|g" .github/scripts/create_application.sh
-          sed -i "s|\${IMAGE_NAME}|$IMAGE_NAME|g" .github/scripts/create_application.sh
-          cat .github/scripts/create_application.sh
+      # - name: Replace variables in script
+      #   run: |
+      #     sed -i "s|\${REGISTRY_PASSWORD}|$REGISTRY_PASSWORD|g" .github/scripts/create_application.sh
+      #     sed -i "s|\${GHRC_OWNER}|$REGISTRY_OWNER|g" .github/scripts/create_application.sh
+      #     sed -i "s|\${IMAGE_NAME}|$IMAGE_NAME|g" .github/scripts/create_application.sh
+      #     cat .github/scripts/create_application.sh
 
 
       # - name: Replace variables in create.sh
