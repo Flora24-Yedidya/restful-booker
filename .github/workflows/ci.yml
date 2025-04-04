@@ -81,6 +81,7 @@ jobs:
 
       - name: Load environment variables
         run: |
+        
           pwd && ls -la 
           cat .env
           # cat .env >> $GITHUB_ENV
