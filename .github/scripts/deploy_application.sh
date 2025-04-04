@@ -14,7 +14,6 @@ RESPONSE=$(curl -s -X POST "$COOLIFY_URL/api/v1/deploy?uuid=$APP_UUID" \
   --header "Authorization: Bearer $COOLIFY_API_KEY" \
   --header "Content-Type: application/json")
   
-#  --data "{\"name\": \"$APP_NAME\"}"
 # Vérifier si la requête a réussi
 if [[ "$RESPONSE" == *"error"* ]]; then
   echo "Erreur lors du déploiement de l'application: $RESPONSE"

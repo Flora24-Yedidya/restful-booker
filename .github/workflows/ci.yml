@@ -67,13 +67,8 @@ jobs:
         run: |
           # Capture l'UUID de la sortie du script
           RESPONSE=$(./.github/scripts/check_and_deploy.sh $COOLIFY_URL $PROJECT_UUID $BRANCH_NAME)
+          echo "APP_UUID=$RESPONSE" 
           echo "APP_UUID=$RESPONSE" >> $GITHUB_ENV
-          # RESPONSE=$(./.github/scripts/check_and_deploy.sh $COOLIFY_URL $PROJECT_UUID $BRANCH_NAME)
-          
-          # # Ajouter l'UUID à GITHUB_ENV
-          # echo "APP_UUID=$RESPONSE" 
-          # # Ajouter l'UUID à GITHUB_ENV
-          # echo "APP_UUID=$APP_UUID" >> $GITHUB_ENV  # Ajouter dans l'environnement
 
       - name: Deploy the application
         run: ./.github/scripts/deploy_application.sh $APP_UUID $BRANCH_NAME
