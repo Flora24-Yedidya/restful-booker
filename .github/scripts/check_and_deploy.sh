@@ -42,5 +42,4 @@ if [[ -z "$APP_UUID" || "$APP_UUID" == "null" ]]; then
   fi
 fi
 
-# Afficher uniquement l'UUID (c'est la seule sortie du script)
 echo "$APP_UUID"

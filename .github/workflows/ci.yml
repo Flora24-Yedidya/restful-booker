@@ -61,8 +61,7 @@ jobs:
           sed -i "s|\$REGISTRY_PASSWORD||${{env.REGISTRY_PASSWORD }}" .github/scripts/create_application.sh
           sed -i "s|\$GHRC_OWNER|${{env.GHRC_OWNER }}|g" .github/scripts/create_application.sh
           sed -i "s|\$IMAGE_NAME|${{env.IMAGE_NAME }}|g" .github/scripts/create_application.sh
-
-    
+          
       - name: Check app
         id: check_app
         run: |
