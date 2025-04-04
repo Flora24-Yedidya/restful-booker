@@ -20,35 +20,50 @@ jobs:
 
       - name: Get Branch Name
         run: |
+          # Récupérer le nom de la branche
           if [[ -n "$GITHUB_HEAD_REF" ]]; then
             branch_name="${GITHUB_HEAD_REF}"
           else
             branch_name=$(git rev-parse --abbrev-ref HEAD)
           fi
 
+          # Remplacer "/" par "-" pour le nom de l'image Docker
           branch_sanitize=$(echo "$branch_name" | sed "s/\//-/g")
 
+          # Définir les variables d'environnement
+          echo "Nom de la branche : $branch_name"
+          echo "Branch_sanitize : $branch_sanitize"
           echo "BRANCH_NAME=$branch_name" >> $GITHUB_ENV
           echo "BRANCH_SANITIZE=$branch_sanitize" >> $GITHUB_ENV
-  
+
       - name: Build & Push Docker Image
         run: |
           #sed -i "s|\${AUTH_TOKEN}|${{ secrets.AUTH_TOKEN }}|g" ./resources/apps.json
           IMAGE_NAME="ghcr.io/devofs2/pro_erpnext_$BRANCH_SANITIZE:latest"
           echo "Building and pushing image: $IMAGE_NAME"
-          echo "REGISTRY_PASSWORD=${{ secrets.GHCR_TOKEN }}" >> GITHUB_ENV
-          echo "IMAGE_NAME=$IMAGE_NAME" >> GITHUB_ENV
+          echo "IMAGE_NAME=$IMAGE_NAME" >> .env
+          echo "REGISTRY_PASSWORD=${{ secrets.GHCR_TOKEN }}" >> .env
+          echo "REGISTRY_OWNER=${{ github.repository_owner }}" >> .env
+          echo "BRANCH_NAME=$BRANCH_NAME" >> .env
 
-      # - name: Upload Docker Compose & Env Files
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: docker-compose-files
-      #     path: |
-      #       docker-compose.yml
-      #       .env
-      #       .github/scripts/  
-      #     overwrite: true
-      #     include-hidden-files: true
+          # Remplacement des variables dans docker-compose.yml
+          #sed -i "s|\${IMAGE_NAME}|$IMAGE_NAME|g" docker-compose.yml
+          # sed -i "s|\${REGISTRY_PASSWORD}|${{ secrets.GHCR_TOKEN }}|g" docker-compose.yml
+         
+          # docker build --build-arg AUTH_TOKEN=${{ secrets.AUTH_TOKEN }}  -t $IMAGE_NAME .
+          # docker push $IMAGE_NAME
+          cat .env
+
+      - name: Upload Docker Compose & Env Files
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-compose-files
+          path: |
+            docker-compose.yml
+            .env
+            .github/scripts/  
+          overwrite: true
+          include-hidden-files: true
 
   deploy-app:
     runs-on: ubuntu-latest
@@ -57,88 +72,31 @@ jobs:
       COOLIFY_URL: ${{ secrets.COOLIFY_URL }}
       COOLIFY_API_KEY: ${{ secrets.COOLIFY_API_KEY }}
       PROJECT_UUID: "v0ggs00w4kgskcksgkgkk8oc"
-      REGISTRY_PASSWORD: ${{ secrets.GHCR_TOKEN }}
       BRANCH_NAME: $BRANCH_NAME
-      IMAGE_NAME : $IMAGE_NAME
+
     steps:
-      - name: checkout repository
-        uses: actions/checkout@v3
+      - name: Download Docker Compose & Env Files
+        uses: actions/download-artifact@v4
+        with:
+          name: docker-compose-files
+          path: .
       
-      - name: Install dependencies
-        run: sudo apt-get install -y jq
+      - name: Install jq
+        run: sudo apt-get install jq -y
 
-      - name: Create app
+      - name: Load environment variables
         run: |
-          # Appel API pour créer l'application
-          RESPONSE=$(curl -s -X POST "$COOLIFY_URL/api/v1/applications/private-deploy-key" \
-            --header "Authorization: Bearer $COOLIFY_API_KEY" \
-            --header "Content-Type: application/json" \
-            --data '{
-              "project_uuid": "'"$PROJECT_UUID"'",
-              "server_uuid": "g04w4sg0csocwgocwgkgg44k",
-              "environment_name": "development",
-              "private_key_uuid": "ecokkkckk8cccwgoww00ogg0",
-              "git_repository": "git@github.com:devofs2/pro_erpnext.git",
-              "git_branch": "'"$BRANCH_NAME"'",
-              "ports_exposes": "8081",
-              "build_pack": "dockercompose",
-              "name": "'"$BRANCH_NAME"'",
-              "docker_compose_location": "docker-compose.yml",
-              "docker_compose_custom_build_command": "echo ${REGISTRY_PASSWORD} | docker login ghcr.io -u devofs2 --password-stdin && docker pull ${IMAGE_NAME}",
-              "docker_compose_custom_start_command": "docker compose up -d",
-              "manual_webhook_secret_github": "hello",
-              "instant_deploy": true
-            }')
-
-          # Extraire l'UUID de la réponse
-          APP_UUID=$(echo "$RESPONSE" | jq -r '.uuid')
-
-          # Vérifier si l'UUID est bien récupéré
-          if [[ -z "$APP_UUID" || "$APP_UUID" == "null" ]]; then
-            echo "Erreur: Impossible de récupérer l'UUID. Réponse API: $RESPONSE"
-            exit 1
-          fi
-
-          # Retourner l'UUID
-          echo "UUID de l'application : $APP_UUID"     
-
-      # - name: Load .env file
-      #   run: |
-      #     set -o allexport
-      #     source .env
-      #     set +o allexport
-
-      # - name: Display loaded environment variables
-      #   run: |
-      #     echo "REGISTRY_PASSWORD=$REGISTRY_PASSWORD"
-      #     echo "GHRC_OWNER=$REGISTRY_OWNER"
-      #     echo "IMAGE_NAME=$IMAGE_NAME"
-        
-      # - name: Replace variables in script
-      #   run: |
-      #     sed -i "s|\${REGISTRY_PASSWORD}|$REGISTRY_PASSWORD|g" .github/scripts/create_application.sh
-      #     sed -i "s|\${GHRC_OWNER}|$REGISTRY_OWNER|g" .github/scripts/create_application.sh
-      #     sed -i "s|\${IMAGE_NAME}|$IMAGE_NAME|g" .github/scripts/create_application.sh
-      #     cat .github/scripts/create_application.sh
-
-
-      # - name: Replace variables in create.sh
-      #   run: |
-      #     sed -i "s|\${REGISTRY_PASSWORD}|${{ secrets.GHCR_TOKEN }}|g" .github/scripts/create_application.sh
-      #     sed -i "s|\$GHRC_OWNER|devofs2|g" .github/scripts/create_application.sh
-      #     sed -i "s|\$IMAGE_NAME|ghcr.io/devofs2/pro_erpnext_feature-cicd:latest|g" .github/scripts/create_application.sh
-
-      # - name: Set execute permissions
-      #   run: chmod +x .github/scripts/*.sh
-      # - name: Debug environment variables
-      #   run: |
-      #     cat .github/scripts/create_application.sh
-
-      # - name: Run deployment script
-      #   run: .github/scripts/create_application.sh "$PROJECT_UUID" "$BRANCH_NAME"
-
-      
-
+          cat .env >> $GITHUB_ENV
+    
+      - name: Set execute permissions
+        run: chmod +x .github/scripts/*.sh
+    
+      - name: Check app
+        id: check_app
+        run: |
+          RESPONSE=$(./.github/scripts/check_and_deploy.sh $COOLIFY_URL $PROJECT_UUID $BRANCH_NAME)
+          echo "APP_UUID=$RESPONSE"
+          #echo "APP_UUID=$RESPONSE" >> $GITHUB_ENV
       
 
   # track-deployment:

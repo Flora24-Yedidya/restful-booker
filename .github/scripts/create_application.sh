@@ -18,7 +18,7 @@ RESPONSE=$(curl -s -X POST "$COOLIFY_URL/api/v1/applications/private-deploy-key"
     "build_pack": "dockercompose",
     "name": "'"$BRANCH_NAME"'",
     "docker_compose_location": "docker-compose.yml",
-    "docker_compose_custom_build_command": "echo ${REGISTRY_PASSWORD} | docker login ghcr.io -u devofs2 --password-stdin && docker pull ${IMAGE_NAME}",
+    "docker_compose_custom_build_command": "echo $REGISTRY_PASSWORD | docker login ghcr.io -u $GHRC_OWNER --password-stdin && docker pull $IMAGE_NAME",
     "docker_compose_custom_start_command": "docker compose up -d",
     "manual_webhook_secret_github": "hello",
     "instant_deploy": true
@@ -34,4 +34,4 @@ if [[ -z "$APP_UUID" || "$APP_UUID" == "null" ]]; then
 fi
 
 # Retourner l'UUID
-echo "UUID de l'application : $APP_UUID"
+echo "$APP_UUID"
