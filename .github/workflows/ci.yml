@@ -80,8 +80,8 @@ jobs:
 
           pwd && ls -la 
           cat .env
-          # cat .env >> $GITHUB_ENV
-          # echo "The IMAGE_NAME is: $IMAGE_NAME"
+          cat .env >> $GITHUB_ENV
+          echo "The IMAGE_NAME is: $IMAGE_NAME"
 
       # - name: Replace variables in create.sh
       #   run: |
