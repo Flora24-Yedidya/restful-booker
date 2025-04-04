@@ -57,10 +57,11 @@ jobs:
 
       - name: Replace variables in create.sh
         run: |
+          pwd && ls -la
           cat .env >> GITHUB_ENV
-          sed -i "s|\$REGISTRY_PASSWORD|${REGISTRY_PASSWORD}|g" .github/scripts/create_application.sh
-          sed -i "s|\$GHRC_OWNER|${GHRC_OWNER}|g" .github/scripts/create_application.sh
-          sed -i "s|\$IMAGE_NAME|${IMAGE_NAME}|g" .github/scripts/create_application.sh
+          sed -i "s|\${REGISTRY_PASSWORD}|$REGISTRY_PASSWORD|g" .github/scripts/create_application.sh
+          sed -i "s|\${GHRC_OWNER}|$GHRC_OWNER|g" .github/scripts/create_application.sh
+          sed -i "s|\${IMAGE_NAME}|$IMAGE_NAME|g" .github/scripts/create_application.sh
       
           cat .github/scripts/create_application.sh
 
