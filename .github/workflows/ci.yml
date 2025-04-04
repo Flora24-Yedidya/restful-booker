@@ -65,8 +65,6 @@ jobs:
           COOLIFY_URL: ${{ secrets.COOLIFY_URL }}
           COOLIFY_API_KEY: ${{ secrets.COOLIFY_API_KEY }}
           PROJECT_UUID: "v0ggs00w4kgskcksgkgkk8oc"
-          BRANCH_NAME: $BRANCH_NAME
-          IMAGE_NAME: $IMAGE_NAME
           REGISTRY_PASSWORD: ${{ secrets.GHCR_TOKEN }}
         run: |
           # Appel API pour créer l'application
