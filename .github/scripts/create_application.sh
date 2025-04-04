@@ -5,7 +5,7 @@ BRANCH_NAME=$2
 
 # Appel API pour créer l'application
 RESPONSE=$(curl -s -X POST "$COOLIFY_URL/api/v1/applications/private-deploy-key" \
-  --header "Authorization: Bearer 1|6rnyiYLZtJRXYwiyiVRv3m3ytr6GOGspcTKoC4HTa8e42f6f" \
+  --header "Authorization: Bearer $COOLIFY_API_KEY" \
   --header "Content-Type: application/json" \
   --data '{
     "project_uuid": "'"$PROJECT_UUID"'",
@@ -18,7 +18,7 @@ RESPONSE=$(curl -s -X POST "$COOLIFY_URL/api/v1/applications/private-deploy-key"
     "build_pack": "dockercompose",
     "name": "'"$BRANCH_NAME"'",
     "docker_compose_location": "docker-compose.yml",
-    "docker_compose_custom_build_command": "echo ${REGISTRY_PASSWORD} | docker login ghcr.io -u ${GHRC_OWNER} --password-stdin && docker pull ${IMAGE_NAME}",
+    "docker_compose_custom_build_command": "echo '${REGISTRY_PASSWORD}' | docker login ghcr.io -u '${GHRC_OWNER}' --password-stdin && docker pull '${IMAGE_NAME}'",
     "docker_compose_custom_start_command": "docker compose up -d",
     "manual_webhook_secret_github": "hello",
     "instant_deploy": true
@@ -34,4 +34,4 @@ if [[ -z "$APP_UUID" || "$APP_UUID" == "null" ]]; then
 fi
 
 # Retourner l'UUID
-echo "$APP_UUID"
+echo "UUID de l'application : $APP_UUID"

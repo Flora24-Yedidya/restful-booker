@@ -51,19 +51,32 @@ jobs:
       
       - name: Install jq
         run: sudo apt-get install jq -y
-      
+
+      - name: Load environment variables
+        run: |
+          set -a
+          source .env
+          set +a
+
       - name: Set execute permissions
-        run:  chmod +x .github/scripts/*.sh
+        run: chmod +x .github/scripts/*.sh
 
       - name: Replace variables in create.sh
         run: |
-          pwd && ls -la
-          cat .env >> GITHUB_ENV
-          sed -i "s|\${REGISTRY_PASSWORD}|$REGISTRY_PASSWORD|g" .github/scripts/create_application.sh
-          sed -i "s|\${GHRC_OWNER}|$GHRC_OWNER|g" .github/scripts/create_application.sh
-          sed -i "s|\${IMAGE_NAME}|$IMAGE_NAME|g" .github/scripts/create_application.sh
+          sed -i "s|\$REGISTRY_PASSWORD|${REGISTRY_PASSWORD}|g" .github/scripts/create_application.sh
+          sed -i "s|\$GHRC_OWNER|${GHRC_OWNER}|g" .github/scripts/create_application.sh
+          sed -i "s|\$IMAGE_NAME|${IMAGE_NAME}|g" .github/scripts/create_application.sh
       
+      - name: Debug environment variables
+        run: |
+          echo "REGISTRY_PASSWORD=${REGISTRY_PASSWORD}"
+          echo "GHRC_OWNER=${GHRC_OWNER}"
+          echo "IMAGE_NAME=${IMAGE_NAME}"
           cat .github/scripts/create_application.sh
+
+      - name: Run deployment script
+        run: .github/scripts/create_application.sh "$PROJECT_UUID" "$BRANCH_NAME"
+      
 
       
 
