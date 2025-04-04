@@ -75,13 +75,21 @@ jobs:
       - name: Install dependencies
         run: sudo apt-get install -y jq
 
-      - name: Load environment variables
+      - name: Load .env file
         run: |
+          set -o allexport
+          source .env
+          set +o allexport
 
-          pwd && ls -la 
-          cat .env
-          cat .env >> $GITHUB_ENV
-          echo "The IMAGE_NAME is: $IMAGE_NAME"
+      - name: Replace variables in script
+        run: |
+          sed -i "s|\${REGISTRY_PASSWORD}|$REGISTRY_PASSWORD|g" .github/scripts/create_application.sh
+          sed -i "s|\${GHRC_OWNER}|$GHRC_OWNER|g" .github/scripts/create_application.sh
+          sed -i "s|\${IMAGE_NAME}|$IMAGE_NAME|g" .github/scripts/create_application.sh
+
+      - name: Display the updated script
+        run: |
+          cat .github/scripts/create_application.sh
 
       # - name: Replace variables in create.sh
       #   run: |
