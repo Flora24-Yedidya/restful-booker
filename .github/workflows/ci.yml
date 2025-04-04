@@ -4,6 +4,10 @@ on:
   push:
     branches:
       - '*'
+  pull_request:
+      branches:
+        - main
+  workflow_dispatch: # Déclencheur manuel
 
 jobs:
   build-and-push:
@@ -47,9 +51,7 @@ jobs:
           # Remplacement des variables dans docker-compose.yml
           sed -i "s|\${IMAGE_NAME}|$IMAGE_NAME|g" docker-compose.yml
           # sed -i "s|\${REGISTRY_PASSWORD}|${{ secrets.GHCR_TOKEN }}|g" docker-compose.yml
-        
-          # docker build --build-arg AUTH_TOKEN=${{ secrets.AUTH_TOKEN }}  -t $IMAGE_NAME .
-          # docker push $IMAGE_NAME
+      
 
       - name: Upload Docker Compose & Env Files
         uses: actions/upload-artifact@v4
@@ -81,7 +83,7 @@ jobs:
 
       - name: Load environment variables
         run: |
-        
+
           pwd && ls -la 
           cat .env
           # cat .env >> $GITHUB_ENV
