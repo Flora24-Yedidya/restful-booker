@@ -100,7 +100,7 @@ jobs:
 
       - name: deploy app
         run: |
-          ./.github/scripts/deploy_application.sh $APP_UUID $BRANCH_NAME)
+          ./.github/scripts/deploy_application.sh $APP_UUID $BRANCH_NAME
       
 
   # track-deployment:
