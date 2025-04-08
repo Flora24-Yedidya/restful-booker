@@ -9,16 +9,17 @@ RESPONSE=$(curl -s -X POST "$COOLIFY_URL/api/v1/applications/private-deploy-key"
   --header "Content-Type: application/json" \
   --data '{
     "project_uuid": "'"$PROJECT_UUID"'",
-    "server_uuid": "g04w4sg0csocwgocwgkgg44k",
-    "environment_name": "development",
-    "private_key_uuid": "ecokkkckk8cccwgoww00ogg0",
-    "git_repository": "git@github.com:devofs2/pro_erpnext.git",
+    "server_uuid": "b00kw00wk4kw40gck0owg0s0",
+    "environment_name": "test",
+    "environment_uuid": "tsowoc8s880848wwk80gok8c",
+    "private_key_uuid": "p8800wog404c044wkgok0o48",
+    "git_repository": "https://github.com/Flora24-Yedidya/restful-booker.git",
     "git_branch": "'"$BRANCH_NAME"'",
     "ports_exposes": "8081",
     "build_pack": "dockercompose",
-    "name": "'"$BRANCH_NAME"'",
+    "name": "test/port",
     "docker_compose_location": "docker-compose.yml",
-    "docker_compose_custom_build_command": "echo $REGISTRY_PASSWORD | docker login ghcr.io -u $GHRC_OWNER --password-stdin && docker pull $IMAGE_NAME",
+    "docker_compose_custom_build_command": "echo $REGISTRY_PASSWORD | docker login ghcr.io -u devofs2 --password-stdin && docker pull ghcr.io/devofs2/pro_erpnext_feature-cicd:latest",
     "docker_compose_custom_start_command": "docker compose up -d",
     "manual_webhook_secret_github": "hello",
     "instant_deploy": true

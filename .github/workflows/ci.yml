@@ -43,7 +43,7 @@ jobs:
           echo "Building and pushing image: $IMAGE_NAME"
           echo "IMAGE_NAME=$IMAGE_NAME" >> .env
           echo "REGISTRY_PASSWORD=${{ secrets.GHCR_TOKEN }}" >> .env
-          echo "REGISTRY_OWNER=${{ github.repository_owner }}" >> .env
+          echo "REGISTRY_OWNER=devofs2" >> .env
           echo "BRANCH_NAME=$BRANCH_NAME" >> .env
 
           # Remplacement des variables dans docker-compose.yml
@@ -71,7 +71,7 @@ jobs:
     env:
       COOLIFY_URL: ${{ secrets.COOLIFY_URL }}
       COOLIFY_API_KEY: ${{ secrets.COOLIFY_API_KEY }}
-      PROJECT_UUID: "v0ggs00w4kgskcksgkgkk8oc"
+      PROJECT_UUID: "lgc4wss0c0okgcg04sk4gw8k"
       BRANCH_NAME: $BRANCH_NAME
 
     steps:
@@ -97,6 +97,10 @@ jobs:
           RESPONSE=$(./.github/scripts/check_and_deploy.sh $COOLIFY_URL $PROJECT_UUID $BRANCH_NAME)
           echo "APP_UUID=$RESPONSE"
           #echo "APP_UUID=$RESPONSE" >> $GITHUB_ENV
+
+      - name: deploy app
+        run: |
+          ./.github/scripts/deploy_application.sh $APP_UUID $BRANCH_NAME)
       
 
   # track-deployment:
