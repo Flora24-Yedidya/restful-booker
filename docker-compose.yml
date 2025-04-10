@@ -53,7 +53,7 @@ services:
     volumes:
       - sites:/home/frappe/frappe-bench/sites
       - logs:/home/frappe/frappe-bench/logs
-      
+
   frontend:
     image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest
     networks:
@@ -71,7 +71,8 @@ services:
       - logs:/home/frappe/frappe-bench/logs
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.erpnext-feature-cicd.rule=Host(`cwo848sgsowsk04o40w4ckwg.161.97.174.134.sslip.io`)"
+      - "traefik.http.routers.erpnext-feature-cicd.rule=Host(`site1.local`)"
+      # - "traefik.http.routers.erpnext-feature-cicd.rule=Host(`cwo848sgsowsk04o40w4ckwg.161.97.174.134.sslip.io`)"
       - "traefik.http.services.erpnext-feature-cicd.loadbalancer.server.port=8080"
 
   redis-queue:
