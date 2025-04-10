@@ -219,5 +219,5 @@ volumes:
   logs:
 
 networks:
-  frappe_network_network:
+  frappe_network:
     driver: bridge
