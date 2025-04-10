@@ -4,7 +4,7 @@ services:
   backend:
     image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest 
     networks:
-      - ${BRANCH_NAME}_network
+      - feature/cicd_network
     deploy:
       restart_policy:
         condition: on-failure
@@ -12,7 +12,7 @@ services:
       - sites:/home/frappe/frappe-bench/sites
       - logs:/home/frappe/frappe-bench/logs
     environment:
-      DB_HOST: db_${BRANCH_NAME}
+      DB_HOST: db_feature/cicd
       DB_PORT: "3306"
       MYSQL_ROOT_PASSWORD: admin
       MARIADB_ROOT_PASSWORD: admin
@@ -20,7 +20,7 @@ services:
   configurator:
     image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest
     networks:
-      - ${BRANCH_NAME}_network
+      - feature/cicd_network
     deploy:
       restart_policy:
         condition: on-failure
@@ -37,7 +37,7 @@ services:
         bench set-config -g redis_socketio "redis://$$REDIS_QUEUE";
         bench set-config -gp socketio_port $$SOCKETIO_PORT;
     environment:
-      DB_HOST: db_${BRANCH_NAME}  
+      DB_HOST: db_feature/cicd  
       DB_PORT: "3306"
       REDIS_CACHE: redis-cache:6379
       REDIS_QUEUE: redis-queue:6379
@@ -50,7 +50,7 @@ services:
   create-site:
     image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest
     networks:
-      - ${BRANCH_NAME}_network
+      - feature/cicd_network
     deploy:
       restart_policy:
         condition: on-failure
@@ -81,9 +81,9 @@ services:
 
   db:
     image: mariadb:10.6
-    container_name: db_${BRANCH_NAME}
+    container_name: db_feature/cicd
     networks:
-      - ${BRANCH_NAME}_network
+      - feature/cicd_network
     healthcheck:
       test: mysqladmin ping -h localhost --password=admin
       interval: 1s
@@ -100,12 +100,12 @@ services:
       MYSQL_ROOT_PASSWORD: admin
       MARIADB_ROOT_PASSWORD: admin
     volumes:
-     - db_${BRANCH_NAME}_data:/var/lib/mysql
+     - db_feature/cicd_data:/var/lib/mysql
 
   frontend:
     image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest
     networks:
-      - ${BRANCH_NAME}_network
+      - feature/cicd_network
     depends_on:
       - websocket
     deploy:
@@ -137,7 +137,7 @@ services:
   queue-long:
     image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest
     networks:
-      - ${BRANCH_NAME}_network
+      - feature/cicd_network
     deploy:
       restart_policy:
         condition: on-failure
@@ -153,7 +153,7 @@ services:
   queue-short:
     image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest
     networks:
-      - ${BRANCH_NAME}_network
+      - feature/cicd_network
     deploy:
       restart_policy:
         condition: on-failure
@@ -169,7 +169,7 @@ services:
   redis-queue:
     image: redis:6.2-alpine
     networks:
-      - ${BRANCH_NAME}_network
+      - feature/cicd_network
     deploy:
       restart_policy:
         condition: on-failure
@@ -179,7 +179,7 @@ services:
   redis-cache:
     image: redis:6.2-alpine
     networks:
-      - ${BRANCH_NAME}_network
+      - feature/cicd_network
     deploy:
       restart_policy:
         condition: on-failure
@@ -187,7 +187,7 @@ services:
   scheduler:
     image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest
     networks:
-      - ${BRANCH_NAME}_network
+      - feature/cicd_network
     deploy:
       restart_policy:
         condition: on-failure
@@ -201,7 +201,7 @@ services:
   websocket:
     image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest
     networks:
-      - ${BRANCH_NAME}_network
+      - feature/cicd_network
     deploy:
       restart_policy:
         condition: on-failure
@@ -213,11 +213,11 @@ services:
       - logs:/home/frappe/frappe-bench/logs
 
 volumes:
-  db_${BRANCH_NAME}_data:
+  db_feature/cicd_data:
   redis-queue-data:
   sites:
   logs:
 
 networks:
-  ${BRANCH_NAME}_network:
+  feature/cicd_network:
     driver: bridge
