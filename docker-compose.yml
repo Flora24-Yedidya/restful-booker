@@ -12,14 +12,13 @@ services:
       - sites:/home/frappe/frappe-bench/sites
       - logs:/home/frappe/frappe-bench/logs
     environment:
-      DB_HOST: as0gs04wkc8o8k8ww44kkwgs  # IP de la base de données centrale MariaDB
+      DB_HOST: as0gs04wkc8o8k8ww44kkwgs
       DB_PORT: "3306"
       MYSQL_ROOT_PASSWORD: admin
       MARIADB_ROOT_PASSWORD: admin
       DB_USER: root
       DB_PASSWORD: admin
-      DB_NAME: test  # Nom de la base de données
-
+      DB_NAME: test
 
   configurator:
     image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest
@@ -28,21 +27,16 @@ services:
     deploy:
       restart_policy:
         condition: on-failure
-    entrypoint:
-      - bash
-      - -c
-    command:
-      - >
-        bench set-config -g db_host $$DB_HOST;
-        bench set-config -gp db_port $$DB_PORT;
+    entrypoint: ["bash", "-c"]
+    command: ["bench set-config -g db_host $$DB_HOST; bench set-config -gp db_port $$DB_PORT;"]
     environment:
-      DB_HOST: as0gs04wkc8o8k8ww44kkwgs  # IP de la base de données centrale MariaDB
+      DB_HOST: as0gs04wkc8o8k8ww44kkwgs
       DB_PORT: "3306"
       MYSQL_ROOT_PASSWORD: admin
       MARIADB_ROOT_PASSWORD: admin
       DB_USER: root
       DB_PASSWORD: admin
-      DB_NAME: test  # Nom de la base de données
+      DB_NAME: test
     volumes:
       - sites:/home/frappe/frappe-bench/sites
       - logs:/home/frappe/frappe-bench/logs
@@ -54,26 +48,11 @@ services:
     deploy:
       restart_policy:
         condition: on-failure
+    entrypoint: ["bash", "-c"]
+    command: ["wait-for-it -t 120 as0gs04wkc8o8k8ww44kkwgs:3306"]
     volumes:
       - sites:/home/frappe/frappe-bench/sites
       - logs:/home/frappe/frappe-bench/logs
-    entrypoint:
-      - bash
-      - -c
-    command:
-      - >
-        wait-for-it -t 120 as0gs04wkc8o8k8ww44kkwgs:3306;  # Attente pour la base de données centrale
-
-  # db:
-  #   image: mariadb:10.6
-  #   container_name: db_feature_cicd
-  #   networks:
-  #     - frappe_network
-  #   environment:
-  #     MYSQL_ROOT_PASSWORD: admin
-  #     MARIADB_ROOT_PASSWORD: admin
-  #   volumes:
-  #     - db_feature_cicd_data:/var/lib/mysql  # Volume isolé pour cette base de données spécifique
 
   frontend:
     image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest
@@ -84,8 +63,7 @@ services:
     deploy:
       restart_policy:
         condition: on-failure
-    command:
-      - nginx-entrypoint.sh
+    command: ["nginx-entrypoint.sh"]
     environment:
       BACKEND: backend:8000
     volumes:
@@ -121,9 +99,7 @@ services:
     deploy:
       restart_policy:
         condition: on-failure
-    command:
-      - bench
-      - schedule
+    command: ["bench", "schedule"]
     volumes:
       - sites:/home/frappe/frappe-bench/sites
       - logs:/home/frappe/frappe-bench/logs
@@ -135,23 +111,12 @@ services:
     deploy:
       restart_policy:
         condition: on-failure
-    command:
-      - node
-      - /home/frappe/frappe-bench/apps/frappe/socketio.js
-    volumes:
-      - sites:/home/frappe/frappe-bench/sites
-      - logs:/home/frappe/frappe-bench/logs
-
-volumes:
-  db_data:   # Volume pour la base de données spécifique à la branche
-  redis-queue-data:
-  sites:
-  logs:
 
 networks:
   coolify:
     external: true
 
-# networks:
-#   frappe_network:
-#     driver: bridge
+volumes:
+  sites:
+  logs:
+  redis-queue-data:

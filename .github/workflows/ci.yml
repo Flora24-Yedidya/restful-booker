@@ -47,8 +47,6 @@ jobs:
           echo "BRANCH_NAME=$BRANCH_NAME" >> .env
 
           #Remplacement des variables dans docker-compose.yml
-          #sed -i "s|\${BRANCH_NAME}|$BRANCH_NAME|g" docker-compose.yml
-          #head -n 25 docker-compose.yml
           #sed -i "s|\${IMAGE_NAME}|$IMAGE_NAME|g" docker-compose.yml
           # sed -i "s|\${REGISTRY_PASSWORD}|${{ secrets.GHCR_TOKEN }}|g" docker-compose.yml
          
@@ -82,11 +80,6 @@ jobs:
         with:
           name: docker-compose-files
           path: .
-      
-      - name: show content of docker-compose file
-        run: |
-           pwd && ls -la
-           head -n 25 docker-compose.yml
       
       - name: Install jq
         run: sudo apt-get install jq -y
