@@ -83,6 +83,11 @@ jobs:
           name: docker-compose-files
           path: .
       
+      - name: show content of docker-compose file
+        run: |
+           pwd && ls -la
+           head -n 25 docker-compose.yml
+      
       - name: Install jq
         run: sudo apt-get install jq -y
 
