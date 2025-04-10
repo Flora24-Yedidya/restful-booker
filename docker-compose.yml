@@ -12,13 +12,13 @@ services:
       - sites:/home/frappe/frappe-bench/sites
       - logs:/home/frappe/frappe-bench/logs
     environment:
-      DB_HOST: as0gs04wkc8o8k8ww44kkwgs
+      DB_HOST: as0gs04wkc8o8k8ww44kkwgs  # Nom ou IP du conteneur MariaDB
       DB_PORT: "3306"
       MYSQL_ROOT_PASSWORD: admin
       MARIADB_ROOT_PASSWORD: admin
       DB_USER: root
       DB_PASSWORD: admin
-      DB_NAME: test
+      DB_NAME: erp_feature_cicd  # Base de données "erp_feature_cicd" à utiliser
 
   configurator:
     image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest
@@ -30,13 +30,13 @@ services:
     entrypoint: ["bash", "-c"]
     command: ["bench set-config -g db_host $$DB_HOST; bench set-config -gp db_port $$DB_PORT;"]
     environment:
-      DB_HOST: as0gs04wkc8o8k8ww44kkwgs
+      DB_HOST: as0gs04wkc8o8k8ww44kkwgs  # Nom ou IP du conteneur MariaDB
       DB_PORT: "3306"
       MYSQL_ROOT_PASSWORD: admin
       MARIADB_ROOT_PASSWORD: admin
       DB_USER: root
       DB_PASSWORD: admin
-      DB_NAME: test
+      DB_NAME: erp_feature_cicd  # Base de données "erp_feature_cicd"
     volumes:
       - sites:/home/frappe/frappe-bench/sites
       - logs:/home/frappe/frappe-bench/logs
@@ -53,7 +53,7 @@ services:
     volumes:
       - sites:/home/frappe/frappe-bench/sites
       - logs:/home/frappe/frappe-bench/logs
-
+      
   frontend:
     image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest
     networks:
