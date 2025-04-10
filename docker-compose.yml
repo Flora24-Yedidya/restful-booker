@@ -11,12 +11,14 @@ services:
     volumes:
       - sites:/home/frappe/frappe-bench/sites
       - logs:/home/frappe/frappe-bench/logs
-      - db_data:/var/lib/mysql  # Volume isolé pour la base de données
     environment:
-      DB_HOST: db_feature_cicd
+      DB_HOST: 10.0.1.7  # IP de la base de données centrale MariaDB
       DB_PORT: "3306"
       MYSQL_ROOT_PASSWORD: admin
       MARIADB_ROOT_PASSWORD: admin
+      DB_USER: mariadb
+      DB_PASSWORD: admin
+      DB_NAME: default  # Nom de la base de données
 
   configurator:
     image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest
@@ -33,8 +35,11 @@ services:
         bench set-config -g db_host $$DB_HOST;
         bench set-config -gp db_port $$DB_PORT;
     environment:
-      DB_HOST: db_feature_cicd
+      DB_HOST: 10.0.1.7  # IP de la base de données centrale MariaDB
       DB_PORT: "3306"
+      DB_USER: mariadb
+      DB_PASSWORD: admin
+      DB_NAME: default
     volumes:
       - sites:/home/frappe/frappe-bench/sites
       - logs:/home/frappe/frappe-bench/logs
@@ -54,18 +59,18 @@ services:
       - -c
     command:
       - >
-        wait-for-it -t 120 db:3306;
+        wait-for-it -t 120 10.0.1.7:3306;  # Attente pour la base de données centrale
 
-  db:
-    image: mariadb:10.6
-    container_name: db_feature_cicd
-    networks:
-      - frappe_network
-    environment:
-      MYSQL_ROOT_PASSWORD: admin
-      MARIADB_ROOT_PASSWORD: admin
-    volumes:
-      - db_feature_cicd_data:/var/lib/mysql  # Volume isolé pour cette base de données spécifique
+  # db:
+  #   image: mariadb:10.6
+  #   container_name: db_feature_cicd
+  #   networks:
+  #     - frappe_network
+  #   environment:
+  #     MYSQL_ROOT_PASSWORD: admin
+  #     MARIADB_ROOT_PASSWORD: admin
+  #   volumes:
+  #     - db_feature_cicd_data:/var/lib/mysql  # Volume isolé pour cette base de données spécifique
 
   frontend:
     image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest
@@ -83,6 +88,10 @@ services:
     volumes:
       - sites:/home/frappe/frappe-bench/sites
       - logs:/home/frappe/frappe-bench/logs
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.erpnext-feature-cicd.rule=Host(`cwo848sgsowsk04o40w4ckwg.161.97.174.134.sslip.io`)"
+      - "traefik.http.services.erpnext-feature-cicd.loadbalancer.server.port=8080"
 
   redis-queue:
     image: redis:6.2-alpine
@@ -131,7 +140,7 @@ services:
       - logs:/home/frappe/frappe-bench/logs
 
 volumes:
-  db_feature_cicd_data:   # Volume pour la base de données spécifique à la branche
+  db_data:   # Volume pour la base de données spécifique à la branche
   redis-queue-data:
   sites:
   logs:
