@@ -2,9 +2,9 @@ version: "3"
 
 services:
   backend:
-    image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest
+    image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest 
     networks:
-      - coolify
+      - frappe_network
     deploy:
       restart_policy:
         condition: on-failure
@@ -12,18 +12,15 @@ services:
       - sites:/home/frappe/frappe-bench/sites
       - logs:/home/frappe/frappe-bench/logs
     environment:
-      DB_HOST: as0gs04wkc8o8k8ww44kkwgs  # Nom ou IP du conteneur MariaDB
+      DB_HOST: db
       DB_PORT: "3306"
       MYSQL_ROOT_PASSWORD: admin
       MARIADB_ROOT_PASSWORD: admin
-      DB_USER: root
-      DB_PASSWORD: admin
-      DB_NAME: erp_feature_cicd  # Base de données "erp_feature_cicd" à utiliser
 
   configurator:
     image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest
     networks:
-      - coolify
+      - frappe_network
     deploy:
       restart_policy:
         condition: on-failure
@@ -40,8 +37,8 @@ services:
         bench set-config -g redis_socketio "redis://$$REDIS_QUEUE";
         bench set-config -gp socketio_port $$SOCKETIO_PORT;
     environment:
-      DB_HOST: as0gs04wkc8o8k8ww44kkwgs  # Nom ou IP du conteneur MariaDB
-      DB_PORT: "3306" 
+      DB_HOST: db
+      DB_PORT: "3306"
       REDIS_CACHE: redis-cache:6379
       REDIS_QUEUE: redis-queue:6379
       SOCKETIO_PORT: "9000"
@@ -52,16 +49,19 @@ services:
   create-site:
     image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest
     networks:
-      - coolify
+      - frappe_network
     deploy:
       restart_policy:
         condition: on-failure
-    entrypoint: 
-      - bash 
+    volumes:
+      - sites:/home/frappe/frappe-bench/sites
+      - logs:/home/frappe/frappe-bench/logs
+    entrypoint:
+      - bash
       - -c
-    command: 
+    command:
       - >
-        wait-for-it -t 120 as0gs04wkc8o8k8ww44kkwgs:3306
+        wait-for-it -t 120 db:3306;
         wait-for-it -t 120 redis-cache:6379;
         wait-for-it -t 120 redis-queue:6379;
         export start=`date +%s`;
@@ -78,16 +78,38 @@ services:
         done;
         echo "sites/common_site_config.json found";
 
+  db:
+    image: mariadb:10.6
+    networks:
+      - frappe_network
+    healthcheck:
+      test: mysqladmin ping -h localhost --password=admin
+      interval: 1s
+      retries: 20
+    deploy:
+      restart_policy:
+        condition: on-failure
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --skip-character-set-client-handshake
+      - --skip-innodb-read-only-compressed # Temporary fix for MariaDB 10.6
+    environment:
+      MYSQL_ROOT_PASSWORD: admin
+      MARIADB_ROOT_PASSWORD: admin
+    volumes:
+      - db-data:/var/lib/mysql
+
   frontend:
     image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest
     networks:
-      - coolify
+      - frappe_network
     depends_on:
       - websocket
     deploy:
       restart_policy:
         condition: on-failure
-    command: 
+    command:
       - nginx-entrypoint.sh
     environment:
       BACKEND: backend:8000
@@ -101,15 +123,13 @@ services:
     volumes:
       - sites:/home/frappe/frappe-bench/sites
       - logs:/home/frappe/frappe-bench/logs
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.erpnext-feature-cicd.rule=Host(`cwo848sgsowsk04o40w4ckwg.161.97.174.134.sslip.io`)"
-      - "traefik.http.services.erpnext-feature-cicd.loadbalancer.server.port=8080"
+    ports:
+      - "8081:8080"
 
   queue-long:
     image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest
     networks:
-      - coolify
+      - frappe_network
     deploy:
       restart_policy:
         condition: on-failure
@@ -125,7 +145,7 @@ services:
   queue-short:
     image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest
     networks:
-      - coolify
+      - frappe_network
     deploy:
       restart_policy:
         condition: on-failure
@@ -141,7 +161,7 @@ services:
   redis-queue:
     image: redis:6.2-alpine
     networks:
-      - coolify
+      - frappe_network
     deploy:
       restart_policy:
         condition: on-failure
@@ -151,7 +171,7 @@ services:
   redis-cache:
     image: redis:6.2-alpine
     networks:
-      - coolify
+      - frappe_network
     deploy:
       restart_policy:
         condition: on-failure
@@ -159,11 +179,13 @@ services:
   scheduler:
     image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest
     networks:
-      - coolify
+      - frappe_network
     deploy:
       restart_policy:
         condition: on-failure
-    command: ["bench", "schedule"]
+    command:
+      - bench
+      - schedule
     volumes:
       - sites:/home/frappe/frappe-bench/sites
       - logs:/home/frappe/frappe-bench/logs
@@ -171,7 +193,7 @@ services:
   websocket:
     image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest
     networks:
-      - coolify
+      - frappe_network
     deploy:
       restart_policy:
         condition: on-failure
@@ -183,11 +205,11 @@ services:
       - logs:/home/frappe/frappe-bench/logs
 
 volumes:
+  db-data:
+  redis-queue-data:
   sites:
   logs:
-  redis-queue-data:
 
 networks:
-  coolify:
-    external: true
-
+  frappe_network:
+    driver: bridge
