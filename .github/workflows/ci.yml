@@ -46,7 +46,7 @@ jobs:
           echo "REGISTRY_OWNER=devofs2" >> .env
           echo "BRANCH_NAME=$BRANCH_NAME" >> .env
 
-          Remplacement des variables dans docker-compose.yml
+          #Remplacement des variables dans docker-compose.yml
           sed -i "s|\${BRANCH_NAME}|$BRANCH_NAME|g" docker-compose.yml
           head -n 25 docker-compose.yml
           #sed -i "s|\${IMAGE_NAME}|$IMAGE_NAME|g" docker-compose.yml
