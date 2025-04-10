@@ -2,16 +2,16 @@ version: "3"
 
 services:
   backend:
-    image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest 
-    container_name: backend_feature_cicd
+    image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest
     networks:
-      - frappe_network_feature_cicd
+      - frappe_network
     deploy:
       restart_policy:
         condition: on-failure
     volumes:
-      - sites_feature_cicd:/home/frappe/frappe-bench/sites
-      - logs_feature_cicd:/home/frappe/frappe-bench/logs
+      - sites:/home/frappe/frappe-bench/sites
+      - logs:/home/frappe/frappe-bench/logs
+      - db_data:/var/lib/mysql  # Volume isolé pour la base de données
     environment:
       DB_HOST: db_feature_cicd
       DB_PORT: "3306"
@@ -20,9 +20,8 @@ services:
 
   configurator:
     image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest
-    container_name: configurator_feature_cicd
     networks:
-      - frappe_network_feature_cicd
+      - frappe_network
     deploy:
       restart_policy:
         condition: on-failure
@@ -31,84 +30,47 @@ services:
       - -c
     command:
       - >
-        ls -1 apps > sites/apps.txt;
         bench set-config -g db_host $$DB_HOST;
         bench set-config -gp db_port $$DB_PORT;
-        bench set-config -g redis_cache "redis://$$REDIS_CACHE";
-        bench set-config -g redis_queue "redis://$$REDIS_QUEUE";
-        bench set-config -g redis_socketio "redis://$$REDIS_QUEUE";
-        bench set-config -gp socketio_port $$SOCKETIO_PORT;
     environment:
       DB_HOST: db_feature_cicd
       DB_PORT: "3306"
-      REDIS_CACHE: redis_cache_feature_cicd:6379
-      REDIS_QUEUE: redis_queue_feature_cicd:6379
-      SOCKETIO_PORT: "9000"
     volumes:
-      - sites_feature_cicd:/home/frappe/frappe-bench/sites
-      - logs_feature_cicd:/home/frappe/frappe-bench/logs
+      - sites:/home/frappe/frappe-bench/sites
+      - logs:/home/frappe/frappe-bench/logs
 
   create-site:
     image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest
-    container_name: create_site_feature_cicd
     networks:
-      - frappe_network_feature_cicd
+      - frappe_network
     deploy:
       restart_policy:
         condition: on-failure
     volumes:
-      - sites_feature_cicd:/home/frappe/frappe-bench/sites
-      - logs_feature_cicd:/home/frappe/frappe-bench/logs
+      - sites:/home/frappe/frappe-bench/sites
+      - logs:/home/frappe/frappe-bench/logs
     entrypoint:
       - bash
       - -c
     command:
       - >
-        wait-for-it -t 120 db_feature_cicd:3306;
-        wait-for-it -t 120 redis_cache_feature_cicd:6379;
-        wait-for-it -t 120 redis_queue_feature_cicd:6379;
-        export start=`date +%s`;
-        until [[ -n `grep -hs ^ sites/common_site_config.json | jq -r ".db_host // empty"` ]] && \
-          [[ -n `grep -hs ^ sites/common_site_config.json | jq -r ".redis_cache // empty"` ]] && \
-          [[ -n `grep -hs ^ sites/common_site_config.json | jq -r ".redis_queue // empty"` ]];
-        do
-          echo "Waiting for sites/common_site_config.json to be created";
-          sleep 5;
-          if (( `date +%s`-start > 120 )); then
-            echo "could not find sites/common_site_config.json with required keys";
-            exit 1
-          fi
-        done;
-        echo "sites/common_site_config.json found";
+        wait-for-it -t 120 db:3306;
 
   db:
     image: mariadb:10.6
     container_name: db_feature_cicd
     networks:
-      - frappe_network_feature_cicd
-    healthcheck:
-      test: mysqladmin ping -h localhost --password=admin
-      interval: 1s
-      retries: 20
-    deploy:
-      restart_policy:
-        condition: on-failure
-    command:
-      - --character-set-server=utf8mb4
-      - --collation-server=utf8mb4_unicode_ci
-      - --skip-character-set-client-handshake
-      - --skip-innodb-read-only-compressed
+      - frappe_network
     environment:
       MYSQL_ROOT_PASSWORD: admin
       MARIADB_ROOT_PASSWORD: admin
     volumes:
-      - db_feature_cicd_data:/var/lib/mysql
+      - db_feature_cicd_data:/var/lib/mysql  # Volume isolé pour cette base de données spécifique
 
   frontend:
     image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest
-    container_name: frontend_feature_cicd
     networks:
-      - frappe_network_feature_cicd
+      - frappe_network
     depends_on:
       - websocket
     deploy:
@@ -117,81 +79,33 @@ services:
     command:
       - nginx-entrypoint.sh
     environment:
-      BACKEND: backend_feature_cicd:8000
-      FRAPPE_SITE_NAME_HEADER: site1.local
-      SOCKETIO: websocket_feature_cicd:9000
-      UPSTREAM_REAL_IP_ADDRESS: 127.0.0.1
-      UPSTREAM_REAL_IP_HEADER: X-Forwarded-For
-      UPSTREAM_REAL_IP_RECURSIVE: "off"
-      PROXY_READ_TIMEOUT: 120
-      CLIENT_MAX_BODY_SIZE: 50m
+      BACKEND: backend:8000
     volumes:
-      - sites_feature_cicd:/home/frappe/frappe-bench/sites
-      - logs_feature_cicd:/home/frappe/frappe-bench/logs
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.feature-cicd.rule=Host(`feature-cicd.coolify2.ofs.bj`)"
-      - "traefik.http.services.feature-cicd.loadbalancer.server.port=8080"
-
-  queue-long:
-    image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest
-    container_name: queue_long_feature_cicd
-    networks:
-      - frappe_network_feature_cicd
-    deploy:
-      restart_policy:
-        condition: on-failure
-    command:
-      - bench
-      - worker
-      - --queue
-      - long,default,short
-    volumes:
-      - sites_feature_cicd:/home/frappe/frappe-bench/sites
-      - logs_feature_cicd:/home/frappe/frappe-bench/logs
-
-  queue-short:
-    image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest
-    container_name: queue_short_feature_cicd
-    networks:
-      - frappe_network_feature_cicd
-    deploy:
-      restart_policy:
-        condition: on-failure
-    command:
-      - bench
-      - worker
-      - --queue
-      - short,default
-    volumes:
-      - sites_feature_cicd:/home/frappe/frappe-bench/sites
-      - logs_feature_cicd:/home/frappe/frappe-bench/logs
+      - sites:/home/frappe/frappe-bench/sites
+      - logs:/home/frappe/frappe-bench/logs
 
   redis-queue:
     image: redis:6.2-alpine
-    container_name: redis_queue_feature_cicd
     networks:
-      - frappe_network_feature_cicd
+      - frappe_network
     deploy:
       restart_policy:
         condition: on-failure
     volumes:
-      - redis_queue_feature_cicd_data:/data
+      - redis-queue-data:/data
 
   redis-cache:
     image: redis:6.2-alpine
-    container_name: redis_cache_feature_cicd
     networks:
-      - frappe_network_feature_cicd
+      - frappe_network
     deploy:
       restart_policy:
         condition: on-failure
 
   scheduler:
     image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest
-    container_name: scheduler_feature_cicd
     networks:
-      - frappe_network_feature_cicd
+      - frappe_network
     deploy:
       restart_policy:
         condition: on-failure
@@ -199,14 +113,13 @@ services:
       - bench
       - schedule
     volumes:
-      - sites_feature_cicd:/home/frappe/frappe-bench/sites
-      - logs_feature_cicd:/home/frappe/frappe-bench/logs
+      - sites:/home/frappe/frappe-bench/sites
+      - logs:/home/frappe/frappe-bench/logs
 
   websocket:
     image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest
-    container_name: websocket_feature_cicd
     networks:
-      - frappe_network_feature_cicd
+      - frappe_network
     deploy:
       restart_policy:
         condition: on-failure
@@ -214,15 +127,15 @@ services:
       - node
       - /home/frappe/frappe-bench/apps/frappe/socketio.js
     volumes:
-      - sites_feature_cicd:/home/frappe/frappe-bench/sites
-      - logs_feature_cicd:/home/frappe/frappe-bench/logs
+      - sites:/home/frappe/frappe-bench/sites
+      - logs:/home/frappe/frappe-bench/logs
 
 volumes:
-  db_feature_cicd_data:
-  redis_queue_feature_cicd_data:
-  sites_feature_cicd:
-  logs_feature_cicd:
+  db_feature_cicd_data:   # Volume pour la base de données spécifique à la branche
+  redis-queue-data:
+  sites:
+  logs:
 
 networks:
-  frappe_network_feature_cicd:
+  frappe_network:
     driver: bridge
