@@ -95,12 +95,14 @@ jobs:
         id: check_app
         run: |
           RESULT=$(./.github/scripts/check_and_deploy.sh $COOLIFY_URL $PROJECT_UUID $BRANCH_NAME)
-          # Séparer les deux valeurs
-          APP_UUID=$(echo "$RESULT" | cut -d '|' -f1)
-          ENV_UUID=$(echo "$RESULT" | cut -d '|' -f2)
+          echo "$RESULT"
 
-          echo "App UUID is: $APP_UUID"
-          echo "Env UUID is: $ENV_UUID"
+          # # Séparer les deux valeurs
+          # APP_UUID=$(echo "$RESULT" | cut -d '|' -f1)
+          # ENV_UUID=$(echo "$RESULT" | cut -d '|' -f2)
+
+          # echo "App UUID is: $APP_UUID"
+          # echo "Env UUID is: $ENV_UUID"
 
           # echo "APP_UUID=$APP_UUID" >> $GITHUB_ENV
           # echo "ENV_UUID=$ENV_UUID" >> $GITHUB_ENV

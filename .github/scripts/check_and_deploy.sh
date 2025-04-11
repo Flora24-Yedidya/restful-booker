@@ -22,42 +22,43 @@ ENVIRONMENTS=$(curl -s -X GET "$COOLIFY_URL/api/v1/projects/$PROJECT_UUID/enviro
   --header "Authorization: Bearer $COOLIFY_API_KEY" \
   --header "Content-Type: application/json")
 
-echo ">> DEBUG ENVIRONMENTS: $ENVIRONMENTS"  # 🔧 DEBUG ICI
+echo "🔧 Réponse brute des environnements :"
+echo "$ENVIRONMENTS"
 
-# 🔎 2. Extraction de l'UUID de l'environnement correspondant à la branche
-ENV_UUID=$(echo "$ENVIRONMENTS" | jq -r --arg BRANCH "$BRANCH_NAME" '.[] | select(.name == $BRANCH) | .uuid')
+# # 🔎 2. Extraction de l'UUID de l'environnement correspondant à la branche
+# ENV_UUID=$(echo "$ENVIRONMENTS" | jq -r --arg BRANCH "$BRANCH_NAME" '.[] | select(.name == $BRANCH) | .uuid')
 
-if [[ -z "$ENV_UUID" || "$ENV_UUID" == "null" ]]; then
-  echo "❌ Erreur: L'environnement '$BRANCH_NAME' n'existe pas dans le projet '$PROJECT_UUID'."
-  exit 1
-fi
+# if [[ -z "$ENV_UUID" || "$ENV_UUID" == "null" ]]; then
+#   echo "❌ Erreur: L'environnement '$BRANCH_NAME' n'existe pas dans le projet '$PROJECT_UUID'."
+#   exit 1
+# fi
 
-# 🔍 3. Récupération des applications
-APPS=$(curl -s -X GET "$COOLIFY_URL/api/v1/applications" \
-  --header "Authorization: Bearer $COOLIFY_API_KEY" \
-  --header "Content-Type: application/json")
+# # 🔍 3. Récupération des applications
+# APPS=$(curl -s -X GET "$COOLIFY_URL/api/v1/applications" \
+#   --header "Authorization: Bearer $COOLIFY_API_KEY" \
+#   --header "Content-Type: application/json")
 
-echo ">> DEBUG APPS: $APPS"  # 🔧 DEBUG ICI
+# echo ">> DEBUG APPS: $APPS"  # 🔧 DEBUG ICI
 
-# 🔎 4. Extraction de l'UUID de l'application correspondant à la branche
-APP_UUID=$(echo "$APPS" | jq -r --arg BRANCH "$BRANCH_NAME" '.[] | select(.name == $BRANCH) | .uuid')
+# # 🔎 4. Extraction de l'UUID de l'application correspondant à la branche
+# APP_UUID=$(echo "$APPS" | jq -r --arg BRANCH "$BRANCH_NAME" '.[] | select(.name == $BRANCH) | .uuid')
 
-# 🔧 5. Création de l'application si elle n'existe pas
-if [[ -z "$APP_UUID" || "$APP_UUID" == "null" ]]; then
-  APP_UUID=$(./.github/scripts/create_application.sh "$PROJECT_UUID" "$BRANCH_NAME" "$ENV_UUID")
+# # 🔧 5. Création de l'application si elle n'existe pas
+# if [[ -z "$APP_UUID" || "$APP_UUID" == "null" ]]; then
+#   APP_UUID=$(./.github/scripts/create_application.sh "$PROJECT_UUID" "$BRANCH_NAME" "$ENV_UUID")
 
-  if [[ -z "$APP_UUID" || "$APP_UUID" == "null" ]]; then
-    echo "❌ Erreur: Échec de la création de l'application."
-    exit 1
-  fi
-fi
+#   if [[ -z "$APP_UUID" || "$APP_UUID" == "null" ]]; then
+#     echo "❌ Erreur: Échec de la création de l'application."
+#     exit 1
+#   fi
+# fi
 
-# ✅ Affichage des UUIDs
-echo "APP_UUID=$APP_UUID"
-echo "ENV_UUID=$ENV_UUID"
+# # ✅ Affichage des UUIDs
+# echo "APP_UUID=$APP_UUID"
+# echo "ENV_UUID=$ENV_UUID"
 
-# Et pour permettre de les capturer depuis GitHub Actions :
-echo "$APP_UUID|$ENV_UUID"
+# # Et pour permettre de les capturer depuis GitHub Actions :
+# echo "$APP_UUID|$ENV_UUID"
 
 
 
