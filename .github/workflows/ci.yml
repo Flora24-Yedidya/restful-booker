@@ -94,8 +94,9 @@ jobs:
       - name: Check app
         id: check_app
         run: |
-          ./.github/scripts/check_and_deploy.sh $COOLIFY_URL $PROJECT_UUID $BRANCH_NAME
-          # RESULT=$(./.github/scripts/check_and_deploy.sh $COOLIFY_URL $PROJECT_UUID $BRANCH_NAME)
+          ./.github/scripts/check_and_deploy.sh $COOLIFY_URL $PROJECT_UUID $BRANCH_SANITIZE
+          
+          # RESULT=$(./.github/scripts/check_and_deploy.sh $COOLIFY_URL $PROJECT_UUID $BRANCH_SANITIZEE)
           # echo "$RESULT"
 
           # # Séparer les deux valeurs

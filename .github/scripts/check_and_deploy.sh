@@ -3,13 +3,13 @@
 
 # Vérification des paramètres
 if [ $# -ne 3 ]; then
-  echo "Usage: $0 <COOLIFY_URL> <PROJECT_UUID> <BRANCH_NAME>"
+  echo "Usage: $0 <COOLIFY_URL> <PROJECT_UUID> <BRANCH_SANITIZE>"
   exit 1
 fi
 
 COOLIFY_URL=$1
 PROJECT_UUID=$2
-BRANCH_NAME=$3
+BRANCH_SANITIZE=$3
 
 # Vérification de la clé API
 if [[ -z "$COOLIFY_API_KEY" ]]; then
@@ -23,11 +23,11 @@ RESOURCES=$(curl -s -X GET "$COOLIFY_URL/api/v1/resources" \
   --header "Authorization: Bearer $COOLIFY_API_KEY" \
   --header "Content-Type: application/json")
 
-# 🔎 2. Extraction du nom de l'environnement correspondant au BRANCH_NAME
-ENV_NAME=$(echo "$RESOURCES" | grep -oP 'coolify\.environmentName=\K[^\\"]+' | grep -F "$BRANCH_NAME" | head -n 1)
+# 🔎 2. Extraction du nom de l'environnement correspondant au BRANCH_SANITIZE
+ENV_NAME=$(echo "$RESOURCES" | grep -oP 'coolify\.environmentName=\K[^\\"]+' | grep -F "$BRANCH_SANITIZE" | head -n 1)
 
 if [[ -z "$ENV_NAME" ]]; then
-  echo "❌ Erreur: Aucun environnement avec le nom '$BRANCH_NAME' trouvé dans les ressources."
+  echo "❌ Erreur: Aucun environnement avec le nom '$BRANCH_SANITIZE' trouvé dans les ressources."
   exit 1
 fi
 
@@ -43,7 +43,7 @@ echo "✅ Environnement trouvé: $ENV_NAME"
 # fi
 
 # ✅ Affichage temporaire
-echo "ENV_UUID=$ENV_UUID"
+#echo "ENV_UUID=$ENV_UUID"
 
 
 # # 🔍 1. Récupération des environnements du projet
