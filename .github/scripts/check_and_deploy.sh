@@ -25,6 +25,7 @@ RESOURCES=$(curl -s -X GET "$COOLIFY_URL/api/v1/resources" \
 
 # 🔎 2. Extraction du nom de l'environnement correspondant au BRANCH_SANITIZE
 ENV_NAME=$(echo "$RESOURCES" | grep -oP 'coolify\.environmentName=\K[^\\"]+' | grep -F "$BRANCH_SANITIZE" | head -n 1)
+APP_UUID=$(echo "$RESPONSE" | jq -r '.[] | select(.name == "'"$BRANCH_NAME"'") | .applications[] | select(.name == "'"$BRANCH_NAME"'") | .uuid')
 
 if [[ -z "$ENV_NAME" ]]; then
   echo "❌ Erreur: Aucun environnement avec le nom '$BRANCH_SANITIZE' trouvé dans les ressources."
@@ -33,14 +34,6 @@ fi
 
 # ✅ ENV trouvé
 echo "✅ Environnement trouvé: $ENV_NAME"
-
-# 🔍 3. Récupération des applications
-APPS=$(curl -s -X GET "$COOLIFY_URL/api/v1/applications" \
-  --header "Authorization: Bearer $COOLIFY_API_KEY" \
-  --header "Content-Type: application/json")
-
-# 🔎 4. Extraction de l'UUID de l'application correspondant à la branche
-APP_UUID=$(echo "$APPS" | jq -r --arg BRANCH "$BRANCH_NAME" '.[] | select(.name == $BRANCH) | .uuid')
 
 # 🔧 5. Création de l'application si elle n'existe pas
 if [[ -z "$APP_UUID" || "$APP_UUID" == "null" ]]; then
@@ -55,9 +48,6 @@ fi
 # # ✅ Affichage des UUIDs
 # echo "APP_UUID=$APP_UUID"
 # echo "ENV_UUID=$ENV_UUID"
-
-# # Et pour permettre de les capturer depuis GitHub Actions :
-# echo "$APP_UUID|$ENV_UUID"
 
 
 
