@@ -94,13 +94,24 @@ jobs:
       - name: Check app
         id: check_app
         run: |
-          RESPONSE=$(./.github/scripts/check_and_deploy.sh $COOLIFY_URL $PROJECT_UUID $BRANCH_NAME)
-          echo "APP_UUID=$RESPONSE"
-          #echo "APP_UUID=$RESPONSE" >> $GITHUB_ENV
+          RESULT=$(./.github/scripts/check_and_deploy.sh $COOLIFY_URL $PROJECT_UUID $BRANCH_NAME)
+          # Séparer les deux valeurs
+          APP_UUID=$(echo "$RESULT" | cut -d '|' -f1)
+          ENV_UUID=$(echo "$RESULT" | cut -d '|' -f2)
 
-      - name: deploy app
-        run: |
-          ./.github/scripts/deploy_application.sh $APP_UUID $BRANCH_NAME
+          echo "App UUID is: $APP_UUID"
+          echo "Env UUID is: $ENV_UUID"
+
+          # echo "APP_UUID=$APP_UUID" >> $GITHUB_ENV
+          # echo "ENV_UUID=$ENV_UUID" >> $GITHUB_ENV
+
+          # RESPONSE=$(./.github/scripts/check_and_deploy.sh $COOLIFY_URL $PROJECT_UUID $BRANCH_NAME)
+          # echo "APP_UUID=$RESPONSE"
+          # #echo "APP_UUID=$RESPONSE" >> $GITHUB_ENV
+
+      # - name: deploy app
+      #   run: |
+      #     ./.github/scripts/deploy_application.sh $APP_UUID $BRANCH_NAME
       
 
   # track-deployment:
