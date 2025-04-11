@@ -73,6 +73,7 @@ jobs:
       COOLIFY_API_KEY: ${{ secrets.COOLIFY_API_KEY }}
       PROJECT_UUID: "lgc4wss0c0okgcg04sk4gw8k"
       BRANCH_NAME: $BRANCH_NAME
+      BRANCH_SANITIZE: $BRANCH_SANITIZE
 
     steps:
       - name: Download Docker Compose & Env Files
@@ -95,7 +96,7 @@ jobs:
         id: check_app
         run: |
           ./.github/scripts/check_and_deploy.sh $COOLIFY_URL $PROJECT_UUID $BRANCH_SANITIZE
-          
+
           # RESULT=$(./.github/scripts/check_and_deploy.sh $COOLIFY_URL $PROJECT_UUID $BRANCH_SANITIZEE)
           # echo "$RESULT"
 
