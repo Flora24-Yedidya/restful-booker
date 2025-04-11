@@ -27,13 +27,13 @@ RESOURCES=$(curl -s -X GET "$COOLIFY_URL/api/v1/resources" \
 echo "🔧 Réponse brute des ressources :"
 echo "$RESOURCES"
 
-# 🔎 Filtrer pour récupérer l'UUID de l'environnement correspondant au nom de la branche
-ENV_UUID=$(echo "$RESOURCES" | jq -r --arg BRANCH "$BRANCH_NAME" '.[] | select(.type == "environment" and .name == $BRANCH) | .uuid')
+# # 🔎 Filtrer pour récupérer l'UUID de l'environnement correspondant au nom de la branche
+# ENV_UUID=$(echo "$RESOURCES" | jq -r --arg BRANCH "$BRANCH_NAME" '.[] | select(.type == "environment" and .name == $BRANCH) | .uuid')
 
-if [[ -z "$ENV_UUID" || "$ENV_UUID" == "null" ]]; then
-  echo "❌ Erreur: Aucun environnement avec le nom '$BRANCH_NAME' trouvé dans les ressources."
-  exit 1
-fi
+# if [[ -z "$ENV_UUID" || "$ENV_UUID" == "null" ]]; then
+#   echo "❌ Erreur: Aucun environnement avec le nom '$BRANCH_NAME' trouvé dans les ressources."
+#   exit 1
+# fi
 
 # ✅ Affichage temporaire
 echo "ENV_UUID=$ENV_UUID"
