@@ -22,6 +22,8 @@ ENVIRONMENTS=$(curl -s -X GET "$COOLIFY_URL/api/v1/projects/$PROJECT_UUID/enviro
   --header "Authorization: Bearer $COOLIFY_API_KEY" \
   --header "Content-Type: application/json")
 
+echo ">> DEBUG ENVIRONMENTS: $ENVIRONMENTS"  # 🔧 DEBUG ICI
+
 # 🔎 2. Extraction de l'UUID de l'environnement correspondant à la branche
 ENV_UUID=$(echo "$ENVIRONMENTS" | jq -r --arg BRANCH "$BRANCH_NAME" '.[] | select(.name == $BRANCH) | .uuid')
 
@@ -34,6 +36,8 @@ fi
 APPS=$(curl -s -X GET "$COOLIFY_URL/api/v1/applications" \
   --header "Authorization: Bearer $COOLIFY_API_KEY" \
   --header "Content-Type: application/json")
+
+echo ">> DEBUG APPS: $APPS"  # 🔧 DEBUG ICI
 
 # 🔎 4. Extraction de l'UUID de l'application correspondant à la branche
 APP_UUID=$(echo "$APPS" | jq -r --arg BRANCH "$BRANCH_NAME" '.[] | select(.name == $BRANCH) | .uuid')
