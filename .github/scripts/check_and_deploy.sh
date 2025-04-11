@@ -23,7 +23,16 @@ RESOURCES=$(curl -s -X GET "$COOLIFY_URL/api/v1/resources" \
   --header "Authorization: Bearer $COOLIFY_API_KEY" \
   --header "Content-Type: application/json")
 
-echo "$RESOURCES" | grep -oP 'coolify\.environmentName=\K[^\\"]+' | sort | uniq
+# 🔎 2. Extraction du nom de l'environnement correspondant au BRANCH_NAME
+ENV_NAME=$(echo "$RESOURCES" | grep -oP 'coolify\.environmentName=\K[^\\"]+' | grep -F "$BRANCH_NAME" | head -n 1)
+
+if [[ -z "$ENV_NAME" ]]; then
+  echo "❌ Erreur: Aucun environnement avec le nom '$BRANCH_NAME' trouvé dans les ressources."
+  exit 1
+fi
+
+# ✅ ENV trouvé
+echo "✅ Environnement trouvé: $ENV_NAME"
 
 # # 🔎 Filtrer pour récupérer l'UUID de l'environnement correspondant au nom de la branche
 # ENV_UUID=$(echo "$RESOURCES" | jq -r --arg BRANCH "$BRANCH_NAME" '.[] | select(.type == "environment" and .name == $BRANCH) | .uuid')
