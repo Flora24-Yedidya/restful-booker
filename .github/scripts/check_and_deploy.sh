@@ -17,13 +17,35 @@ if [[ -z "$COOLIFY_API_KEY" ]]; then
   exit 1
 fi
 
-# 🔍 1. Récupération des environnements du projet
-ENV_RESPONSE=$(curl -s -X GET "$COOLIFY_URL/api/v1/projects/$PROJECT_UUID/$BRANCH_NAME" \
+
+# 🔍 Récupération de toutes les ressources
+RESOURCES=$(curl -s -X GET "$COOLIFY_URL/api/v1/resources" \
   --header "Authorization: Bearer $COOLIFY_API_KEY" \
   --header "Content-Type: application/json")
 
-echo "🔧 Réponse brute de l'environnement :"
-echo "$ENV_RESPONSE"
+# 🐛 Debug temporaire
+echo "🔧 Réponse brute des ressources :"
+echo "$RESOURCES"
+
+# 🔎 Filtrer pour récupérer l'UUID de l'environnement correspondant au nom de la branche
+ENV_UUID=$(echo "$RESOURCES" | jq -r --arg BRANCH "$BRANCH_NAME" '.[] | select(.type == "environment" and .name == $BRANCH) | .uuid')
+
+if [[ -z "$ENV_UUID" || "$ENV_UUID" == "null" ]]; then
+  echo "❌ Erreur: Aucun environnement avec le nom '$BRANCH_NAME' trouvé dans les ressources."
+  exit 1
+fi
+
+# ✅ Affichage temporaire
+echo "ENV_UUID=$ENV_UUID"
+
+
+# # 🔍 1. Récupération des environnements du projet
+# ENV_RESPONSE=$(curl -s -X GET "$COOLIFY_URL/api/v1/projects/$PROJECT_UUID/$BRANCH_NAME" \
+#   --header "Authorization: Bearer $COOLIFY_API_KEY" \
+#   --header "Content-Type: application/json")
+
+# echo "🔧 Réponse brute de l'environnement :"
+# echo "$ENV_RESPONSE"
 
 # # 🔎 2. Extraction de l'UUID de l'environnement correspondant à la branche
 # ENV_UUID=$(echo "$ENVIRONMENTS" | jq -r --arg BRANCH "$BRANCH_NAME" '.[] | select(.name == $BRANCH) | .uuid')
