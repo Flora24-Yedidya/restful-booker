@@ -125,7 +125,7 @@ services:
       - logs:/home/frappe/frappe-bench/logs
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.erpnext-feature-cicd.rule=Host(b80wso0o8ogwks88csogo8cg.161.97.174.134.sslip.io)"
+      - "traefik.http.routers.erpnext-${BRANCH_SANITIZE}.rule=Host(`${BRANCH_SANITIZE}.161.97.174.134.sslip.io`)"
       - "traefik.http.services.erpnext-feature-cicd.loadbalancer.server.port=8080"
 
   queue-long:

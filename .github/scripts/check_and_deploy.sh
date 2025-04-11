@@ -2,14 +2,15 @@
 #!/bin/bash
 
 # Vérification des paramètres
-if [ $# -ne 3 ]; then
-  echo "Usage: $0 <COOLIFY_URL> <PROJECT_UUID> <BRANCH_SANITIZE>"
+if [ $# -ne 4 ]; then
+  echo "Usage: $0 <COOLIFY_URL> <PROJECT_UUID> <BRANCH_SANITIZE> <BRANCH_NAME>"
   exit 1
 fi
 
 COOLIFY_URL=$1
 PROJECT_UUID=$2
 BRANCH_SANITIZE=$3
+BRANCH_NAME=$4
 
 # Vérification de la clé API
 if [[ -z "$COOLIFY_API_KEY" ]]; then
@@ -17,8 +18,7 @@ if [[ -z "$COOLIFY_API_KEY" ]]; then
   exit 1
 fi
 
-
-# 🔍 Récupération de toutes les ressources
+# 🔍 1. Récupération de toutes les ressources
 RESOURCES=$(curl -s -X GET "$COOLIFY_URL/api/v1/resources" \
   --header "Authorization: Bearer $COOLIFY_API_KEY" \
   --header "Content-Type: application/json")
@@ -34,53 +34,23 @@ fi
 # ✅ ENV trouvé
 echo "✅ Environnement trouvé: $ENV_NAME"
 
-# # 🔎 Filtrer pour récupérer l'UUID de l'environnement correspondant au nom de la branche
-# ENV_UUID=$(echo "$RESOURCES" | jq -r --arg BRANCH "$BRANCH_NAME" '.[] | select(.type == "environment" and .name == $BRANCH) | .uuid')
+# 🔍 3. Récupération des applications
+APPS=$(curl -s -X GET "$COOLIFY_URL/api/v1/applications" \
+  --header "Authorization: Bearer $COOLIFY_API_KEY" \
+  --header "Content-Type: application/json")
 
-# if [[ -z "$ENV_UUID" || "$ENV_UUID" == "null" ]]; then
-#   echo "❌ Erreur: Aucun environnement avec le nom '$BRANCH_NAME' trouvé dans les ressources."
-#   exit 1
-# fi
+# 🔎 4. Extraction de l'UUID de l'application correspondant à la branche
+APP_UUID=$(echo "$APPS" | jq -r --arg BRANCH "$BRANCH_NAME" '.[] | select(.name == $BRANCH) | .uuid')
 
-# ✅ Affichage temporaire
-#echo "ENV_UUID=$ENV_UUID"
+# 🔧 5. Création de l'application si elle n'existe pas
+if [[ -z "$APP_UUID" || "$APP_UUID" == "null" ]]; then
+  APP_UUID=$(./.github/scripts/create_application.sh "$PROJECT_UUID" "$BRANCH_NAME" "$ENV_NAME" "$BRANCH_SANITIZE")
 
-
-# # 🔍 1. Récupération des environnements du projet
-# ENV_RESPONSE=$(curl -s -X GET "$COOLIFY_URL/api/v1/projects/$PROJECT_UUID/$BRANCH_NAME" \
-#   --header "Authorization: Bearer $COOLIFY_API_KEY" \
-#   --header "Content-Type: application/json")
-
-# echo "🔧 Réponse brute de l'environnement :"
-# echo "$ENV_RESPONSE"
-
-# # 🔎 2. Extraction de l'UUID de l'environnement correspondant à la branche
-# ENV_UUID=$(echo "$ENVIRONMENTS" | jq -r --arg BRANCH "$BRANCH_NAME" '.[] | select(.name == $BRANCH) | .uuid')
-
-# if [[ -z "$ENV_UUID" || "$ENV_UUID" == "null" ]]; then
-#   echo "❌ Erreur: L'environnement '$BRANCH_NAME' n'existe pas dans le projet '$PROJECT_UUID'."
-#   exit 1
-# fi
-
-# # 🔍 3. Récupération des applications
-# APPS=$(curl -s -X GET "$COOLIFY_URL/api/v1/applications" \
-#   --header "Authorization: Bearer $COOLIFY_API_KEY" \
-#   --header "Content-Type: application/json")
-
-# echo ">> DEBUG APPS: $APPS"  # 🔧 DEBUG ICI
-
-# # 🔎 4. Extraction de l'UUID de l'application correspondant à la branche
-# APP_UUID=$(echo "$APPS" | jq -r --arg BRANCH "$BRANCH_NAME" '.[] | select(.name == $BRANCH) | .uuid')
-
-# # 🔧 5. Création de l'application si elle n'existe pas
-# if [[ -z "$APP_UUID" || "$APP_UUID" == "null" ]]; then
-#   APP_UUID=$(./.github/scripts/create_application.sh "$PROJECT_UUID" "$BRANCH_NAME" "$ENV_UUID")
-
-#   if [[ -z "$APP_UUID" || "$APP_UUID" == "null" ]]; then
-#     echo "❌ Erreur: Échec de la création de l'application."
-#     exit 1
-#   fi
-# fi
+  if [[ -z "$APP_UUID" || "$APP_UUID" == "null" ]]; then
+    echo "❌ Erreur: Échec de la création de l'application."
+    exit 1
+  fi
+fi
 
 # # ✅ Affichage des UUIDs
 # echo "APP_UUID=$APP_UUID"
