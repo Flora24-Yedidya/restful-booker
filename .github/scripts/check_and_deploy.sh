@@ -23,9 +23,7 @@ RESOURCES=$(curl -s -X GET "$COOLIFY_URL/api/v1/resources" \
   --header "Authorization: Bearer $COOLIFY_API_KEY" \
   --header "Content-Type: application/json")
 
-# 🐛 Debug temporaire
-echo "🔧 Réponse brute des ressources :"
-echo "$RESOURCES"
+echo "$RESOURCES" | grep -oP 'coolify\.environmentName=\K[^\\"]+' | sort | uniq
 
 # # 🔎 Filtrer pour récupérer l'UUID de l'environnement correspondant au nom de la branche
 # ENV_UUID=$(echo "$RESOURCES" | jq -r --arg BRANCH "$BRANCH_NAME" '.[] | select(.type == "environment" and .name == $BRANCH) | .uuid')
