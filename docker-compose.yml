@@ -14,10 +14,9 @@ services:
     environment:
       DB_HOST: 62.171.163.165
       DB_PORT: "3306"
-      DB_NAME: frappe_db
-      DB_USER: frappe
-      DB_PASSWORD: frappepassword
-
+      DB_NAME: _b533f5fdd65aaf8c
+      DB_USER: erpnext_user
+      DB_PASSWORD: secure_password
 
   configurator:
     image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest
@@ -41,11 +40,9 @@ services:
     environment:
       DB_HOST: 62.171.163.165
       DB_PORT: "3306"
-      # MYSQL_ROOT_PASSWORD: ""
-      # MARIADB_ROOT_PASSWORD: ""
-      DB_NAME: frappe_db
-      DB_USER: frappe
-      DB_PASSWORD: frappepassword
+      DB_NAME: _b533f5fdd65aaf8c
+      DB_USER: erpnext_user
+      DB_PASSWORD: secure_password
       REDIS_CACHE: redis-cache:6379
       REDIS_QUEUE: redis-queue:6379
       SOCKETIO_PORT: "9000"
