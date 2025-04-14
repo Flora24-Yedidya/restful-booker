@@ -16,8 +16,6 @@ if [[ -z "$COOLIFY_API_KEY" ]]; then
   exit 1
 fi
 
-# Construction du nom de domaine basé sur le sanitize de la branche
-DOMAIN_NAME="http://${BRANCH_SANITIZE//[^a-zA-Z0-9-]/-}.sslip.io"
 
 # 📦 Appel API pour créer l'application
 RESPONSE=$(curl -s -X POST "https://app.coolify.io/api/v1/applications/private-deploy-key" \
@@ -34,7 +32,6 @@ RESPONSE=$(curl -s -X POST "https://app.coolify.io/api/v1/applications/private-d
     "build_pack": "dockercompose",
     "name": "'"$BRANCH_NAME"'",
     "docker_compose_location": "docker-compose.yml",
-    "domains": "'"$DOMAIN_NAME"'",
     "instant_deploy": true
   }')
 
