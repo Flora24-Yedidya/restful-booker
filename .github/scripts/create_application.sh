@@ -34,7 +34,7 @@ RESPONSE=$(curl -s -X POST "https://app.coolify.io/api/v1/applications/private-d
     "build_pack": "dockercompose",
     "name": "'"$BRANCH_NAME"'",
     "docker_compose_location": "docker-compose.yml",
-    "domains": ["'"$DOMAIN_NAME"'"],
+    "domains": "'"$DOMAIN_NAME"'",
     "instant_deploy": true
   }')
 
