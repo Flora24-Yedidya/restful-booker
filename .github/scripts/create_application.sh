@@ -17,7 +17,7 @@ if [[ -z "$COOLIFY_API_KEY" ]]; then
 fi
 
 # Construction du nom de domaine basé sur le sanitize de la branche
-DOMAIN_NAME="${BRANCH_SANITIZE}.sslip.io"
+DOMAIN_NAME="http://${BRANCH_SANITIZE//[^a-zA-Z0-9-]/-}.sslip.io"
 
 # 📦 Appel API pour créer l'application
 RESPONSE=$(curl -s -X POST "https://app.coolify.io/api/v1/applications/private-deploy-key" \
