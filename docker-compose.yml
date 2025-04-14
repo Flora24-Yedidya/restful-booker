@@ -14,9 +14,8 @@ services:
     environment:
       DB_HOST: 62.171.163.165
       DB_PORT: "3306"
-      DB_NAME: _b533f5fdd65aaf8c
-      DB_USER: erpnext_user
-      DB_PASSWORD: secure_password
+      MYSQL_ROOT_PASSWORD: admin
+      MARIADB_ROOT_PASSWORD: admin
 
   configurator:
     image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest
