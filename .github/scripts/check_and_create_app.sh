@@ -25,7 +25,6 @@ APP_UUID=$(echo "$APP_RESPONSE" | jq -r '.[] | select(.name == "'"$BRANCH_NAME"'
 
 # 🚀 4. Créer l'application si elle n'existe pas
 if [[ -z "$APP_UUID" || "$APP_UUID" == "null" ]]; then
-  echo "📦 Application '$BRANCH_NAME' non trouvée. Création en cours..."
   APP_UUID=$(./.github/scripts/create_application.sh "$PROJECT_UUID" "$BRANCH_NAME" "$BRANCH_SANITIZE")
 
   if [[ -z "$APP_UUID" || "$APP_UUID" == "null" ]]; then
@@ -37,4 +36,4 @@ else
 fi
 
 # 📦 Affichage final
-echo "APP_UUID=$APP_UUID"
+echo "$APP_UUID"

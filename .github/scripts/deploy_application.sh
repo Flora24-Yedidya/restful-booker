@@ -10,7 +10,7 @@ if [[ -z "$APP_UUID" || -z "$APP_NAME" ]]; then
 fi  
 
 # Requête pour lancer le déploiement de l'application via l'API
-RESPONSE=$(curl -s -X POST "$COOLIFY_URL/api/v1/deploy?uuid=$APP_UUID" \
+RESPONSE=$(curl -s -X POST "https://app.coolify.io/api/v1/deploy?uuid=$APP_UUID" \
   --header "Authorization: Bearer $COOLIFY_API_KEY" \
   --header "Content-Type: application/json")
   
