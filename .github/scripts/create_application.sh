@@ -10,12 +10,14 @@ PROJECT_UUID=$1
 BRANCH_NAME=$2
 BRANCH_SANITIZE=$3
 
-
 # 🔐 Vérification de la clé API
 if [[ -z "$COOLIFY_API_KEY" ]]; then
   echo "❌ Erreur: La variable COOLIFY_API_KEY n'est pas définie."
   exit 1
 fi
+
+# Construction du nom de domaine basé sur le sanitize de la branche
+DOMAIN_NAME="${BRANCH_SANITIZE}.sslip.io"
 
 # 📦 Appel API pour créer l'application
 RESPONSE=$(curl -s -X POST "https://app.coolify.io/api/v1/applications/private-deploy-key" \
@@ -32,6 +34,7 @@ RESPONSE=$(curl -s -X POST "https://app.coolify.io/api/v1/applications/private-d
     "build_pack": "dockercompose",
     "name": "'"$BRANCH_NAME"'",
     "docker_compose_location": "docker-compose.yml",
+    "docker_compose_domains": ["'"$DOMAIN_NAME"'"],
     "instant_deploy": true
   }')
 
