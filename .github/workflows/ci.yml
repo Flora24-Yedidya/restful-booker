@@ -73,7 +73,7 @@ jobs:
     env:
       COOLIFY_URL: ${{ secrets.COOLIFY_URL }}
       COOLIFY_API_KEY: ${{ secrets.COOLIFY_API_KEY }}
-      PROJECT_UUID: "lgc4wss0c0okgcg04sk4gw8k"
+      PROJECT_UUID: "oo0o044sk8woco480k8occk0"
       BRANCH_NAME: $BRANCH_NAME
       BRANCH_SANITIZE: $BRANCH_SANITIZE
 
@@ -97,7 +97,7 @@ jobs:
       - name: Check app
         id: check_app
         run: |
-          ./.github/scripts/check_and_deploy.sh $COOLIFY_URL $PROJECT_UUID $BRANCH_SANITIZE $BRANCH_NAME
+          ./.github/scripts/check_and_create.sh $PROJECT_UUID $BRANCH_SANITIZE $BRANCH_NAME
 
           # RESULT=$(./.github/scripts/check_and_deploy.sh $COOLIFY_URL $PROJECT_UUID $BRANCH_SANITIZEE)
           # echo "$RESULT"
