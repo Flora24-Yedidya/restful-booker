@@ -97,7 +97,7 @@ jobs:
       - name: Check app
         id: check_app
         run: |
-          ./.github/scripts/check_and_create.sh $PROJECT_UUID $BRANCH_SANITIZE $BRANCH_NAME
+          ./.github/scripts/check_and_create_app.sh $PROJECT_UUID $BRANCH_SANITIZE $BRANCH_NAME
 
           # RESULT=$(./.github/scripts/check_and_deploy.sh $COOLIFY_URL $PROJECT_UUID $BRANCH_SANITIZEE)
           # echo "$RESULT"
