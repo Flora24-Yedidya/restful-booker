@@ -18,7 +18,7 @@ RESPONSE=$(curl -s -X POST "$COOLIFY_URL/api/v1/applications/private-deploy-key"
     "ports_exposes": "8081",
     "build_pack": "dockercompose",
     "name": "'"$BRANCH_NAME"'",
-    "docker_compose_location": "docker compose.yml",
+    "docker_compose_location": "docker-compose.yml",
     "docker_compose_custom_build_command": "echo "token_à_remplacer" | docker login ghcr.io -u devofs2 --password-stdin && docker pull ghcr.io/devofs2/pro_erpnext_feature-cicd",
     "manual_webhook_secret_github": "hello",
     "docker_compose_domains": ["'"$BRANCH_SANITIZE"'.161.97.174.134.sslip.io"],
