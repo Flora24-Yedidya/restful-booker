@@ -14,14 +14,11 @@ services:
       - sites:/home/frappe/frappe-bench/sites
       - logs:/home/frappe/frappe-bench/logs
     environment:
-      BRANCH_NAME: ${BRANCH_NAME}
-      SITE_NAME: site-${BRANCH_NAME}.local
       ADMIN_PASSWORD: admin
       DB_ROOT_USER: root
       DB_ROOT_PASSWORD: admin
       DB_HOST: db
       DB_PORT: "3306"
-    command: ["bash", "-c", "chmod +x /init.sh && /init.sh"]
 
   configurator:
     image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest
@@ -83,6 +80,10 @@ services:
           fi
         done;
         echo "sites/common_site_config.json found";
+        cd /home/frappe/frappe-bench/sites ;
+        bench new-site site1.local --admin-password=admin --db-root-username=root --db-root-password=admin --set-default;
+        bench --site site1.local install-app pibicut payments erpnext;
+        bench --site site1.local migrate;
 
   db:
     image: mariadb:10.6
