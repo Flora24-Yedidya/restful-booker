@@ -3,7 +3,6 @@ version: "3"
 services:
   backend:
     image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest
-    user: root
     networks:
       - frappe_network
     deploy:
@@ -64,9 +63,9 @@ services:
       - -c
     command:
       - >
-        wait-for-it -t 120 db:3306;
-        wait-for-it -t 120 redis-cache:6379;
-        wait-for-it -t 120 redis-queue:6379;
+        wait-for-it -t 200 db:3306;
+        wait-for-it -t 200 redis-cache:6379;
+        wait-for-it -t 200 redis-queue:6379;
         export start=`date +%s`;
         until [[ -n `grep -hs ^ sites/common_site_config.json | jq -r ".db_host // empty"` ]] && \
           [[ -n `grep -hs ^ sites/common_site_config.json | jq -r ".redis_cache // empty"` ]] && \
