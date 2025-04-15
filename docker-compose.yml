@@ -9,13 +9,18 @@ services:
       restart_policy:
         condition: on-failure
     volumes:
+      - ./init.sh:/init.sh
       - sites:/home/frappe/frappe-bench/sites
       - logs:/home/frappe/frappe-bench/logs
     environment:
+      BRANCH_NAME: ${BRANCH_NAME}
+      SITE_NAME: site-${BRANCH_NAME}.local
+      ADMIN_PASSWORD: admin
+      DB_ROOT_USER: root
+      DB_ROOT_PASSWORD: admin
       DB_HOST: db
       DB_PORT: "3306"
-      MYSQL_ROOT_PASSWORD: admin
-      MARIADB_ROOT_PASSWORD: admin
+    command: ["bash", "-c", "chmod +x /init.sh && /init.sh"]
 
   configurator:
     image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest
@@ -125,7 +130,7 @@ services:
       - logs:/home/frappe/frappe-bench/logs
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.erpnext-${BRANCH_SANITIZE}.rule=Host(`koowgcgsc0g8wcggoc08kwss.161.97.174.134.sslip.io`)"
+      - "traefik.http.routers.erpnext-feature-cicd.rule=Host(`feature-cicd.161.97.174.134.sslip.io`)"
       - "traefik.http.services.erpnext-feature-cicd.loadbalancer.server.port=8080"
 
   queue-long:

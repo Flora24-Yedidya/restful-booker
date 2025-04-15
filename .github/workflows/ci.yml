@@ -48,7 +48,8 @@ jobs:
           echo "BRANCH_SANITIZE=$BRANCH_SANITIZE" >> .env
 
           #Remplacement des variables dans docker-compose.yml
-          sed -i "s|\${BRANCH_SANITIZE}|$BRANCH_SANITIZE|g" docker-compose.yml
+          sed -i "s|\${BRANCH_NAME}|$BRANCH_NAME|g" docker-compose.yml
+          head -n 25 docker-compose.yml
           #sed -i "s|\${IMAGE_NAME}|$IMAGE_NAME|g" docker-compose.yml
           # sed -i "s|\${REGISTRY_PASSWORD}|${{ secrets.GHCR_TOKEN }}|g" docker-compose.yml
          
@@ -98,20 +99,8 @@ jobs:
         run: |
           RESULT=$(./.github/scripts/check_and_create_app.sh $PROJECT_UUID $BRANCH_SANITIZE $BRANCH_NAME)
           echo "$RESULT"
-
-          # # Séparer les deux valeurs
-          # APP_UUID=$(echo "$RESULT" | cut -d '|' -f1)
-          # ENV_UUID=$(echo "$RESULT" | cut -d '|' -f2)
-
-          # echo "App UUID is: $APP_UUID"
-          # echo "Env UUID is: $ENV_UUID"
-
-          # echo "APP_UUID=$APP_UUID" >> $GITHUB_ENV
-          # echo "ENV_UUID=$ENV_UUID" >> $GITHUB_ENV
-
-          # RESPONSE=$(./.github/scripts/check_and_deploy.sh $COOLIFY_URL $PROJECT_UUID $BRANCH_NAME)
-          # echo "APP_UUID=$RESPONSE"
-          # #echo "APP_UUID=$RESPONSE" >> $GITHUB_ENV
+          echo "APP_UUID=$RESPONSE" >> $GITHUB_ENV
+        #  ./.github/scripts/deploy_application.sh $APP_UUID $BRANCH_NAME)
 
       # - name: deploy app
       #   run: |
