@@ -13,8 +13,6 @@ services:
       - DB_HOST=62.171.163.165
       - DB_PORT=3306
       - DB_NAME=feature_cicd_db
-      - DB_USER=feature_user
-      - DB_PASSWORD=strong_password
 
   configurator:
     image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest
@@ -37,8 +35,6 @@ services:
       - DB_HOST=62.171.163.165
       - DB_PORT=3306
       - DB_NAME=feature_cicd_db
-      - DB_USER=feature_user
-      - DB_PASSWORD=strong_password
       - REDIS_CACHE=redis-cache:6379
       - REDIS_QUEUE=redis-queue:6379
       - SOCKETIO_PORT=9000
