@@ -10,9 +10,9 @@ services:
       - sites-${BRANCH_SANITIZE}:/home/frappe/frappe-bench/sites
       - logs-${BRANCH_SANITIZE}:/home/frappe/frappe-bench/logs
     environment:
-      - MYSQL_ROOT_PASSWORD=vN1FtaK4PeMvyTSWTADMgsSxpHWEfjqswOqRJXrXJgPf9mvp0HRgJFKimZOQjb6c
+      - MYSQL_ROOT_PASSWORD=hello
       - MYSQL_USER=mariadb
-      - MYSQL_PASSWORD=GTwxGIIUSshWdq51qnhEbZ3Z8QcmXkZt3dO06bLBFLPd2rQkvP5PxhltKf0guaYH
+      - MYSQL_PASSWORD=123
       - MYSQL_HOST=161.97.174.134
       - MYSQL_PORT=5432
       - MYSQL_DATABASE=default
@@ -36,9 +36,9 @@ services:
         bench set-config -g redis_socketio "redis://$$REDIS_QUEUE";
         bench set-config -gp socketio_port $$SOCKETIO_PORT;
     environment:
-      - MYSQL_ROOT_PASSWORD=vN1FtaK4PeMvyTSWTADMgsSxpHWEfjqswOqRJXrXJgPf9mvp0HRgJFKimZOQjb6c
+      - MYSQL_ROOT_PASSWORD=hello
       - MYSQL_USER=mariadb
-      - MYSQL_PASSWORD=GTwxGIIUSshWdq51qnhEbZ3Z8QcmXkZt3dO06bLBFLPd2rQkvP5PxhltKf0guaYH
+      - MYSQL_PASSWORD=123
       - MYSQL_HOST=161.97.174.134
       - MYSQL_PORT=5432
       - MYSQL_DATABASE=default
