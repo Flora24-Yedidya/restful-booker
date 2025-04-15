@@ -3,15 +3,12 @@ version: "3"
 services:
   backend:
     image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest
-    networks:
-      - frappe_network
     deploy:
       restart_policy:
         condition: on-failure
     volumes:
-      - ./init.sh:/init.sh
-      - sites:/home/frappe/frappe-bench/sites
-      - logs:/home/frappe/frappe-bench/logs
+      - sites-${BRANCH_NAME}:/home/frappe/frappe-bench/sites
+      - logs-${BRANCH_NAME}:/home/frappe/frappe-bench/logs
     environment:
       ADMIN_PASSWORD: admin
       DB_ROOT_USER: root
@@ -21,8 +18,6 @@ services:
 
   configurator:
     image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest
-    networks:
-      - frappe_network
     deploy:
       restart_policy:
         condition: on-failure
@@ -45,19 +40,17 @@ services:
       REDIS_QUEUE: redis-queue:6379
       SOCKETIO_PORT: "9000"
     volumes:
-      - sites:/home/frappe/frappe-bench/sites
-      - logs:/home/frappe/frappe-bench/logs
+      - sites-${BRANCH_NAME}:/home/frappe/frappe-bench/sites
+      - logs-${BRANCH_NAME}:/home/frappe/frappe-bench/logs
 
   create-site:
     image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest
-    networks:
-      - frappe_network
     deploy:
       restart_policy:
         condition: on-failure
     volumes:
-      - sites:/home/frappe/frappe-bench/sites
-      - logs:/home/frappe/frappe-bench/logs
+      - sites-${BRANCH_NAME}:/home/frappe/frappe-bench/sites
+      - logs-${BRANCH_NAME}:/home/frappe/frappe-bench/logs
     entrypoint:
       - bash
       - -c
@@ -82,8 +75,6 @@ services:
 
   db:
     image: mariadb:10.6
-    networks:
-      - frappe_network
     healthcheck:
       test: mysqladmin ping -h localhost --password=admin
       interval: 1s
@@ -100,12 +91,10 @@ services:
       MYSQL_ROOT_PASSWORD: admin
       MARIADB_ROOT_PASSWORD: admin
     volumes:
-      - db-data:/var/lib/mysql
+      - db-data-${BRANCH_NAME}:/var/lib/mysql
 
   frontend:
     image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest
-    networks:
-      - frappe_network
     depends_on:
       - websocket
     deploy:
@@ -123,8 +112,8 @@ services:
       PROXY_READ_TIMEOUT: 120
       CLIENT_MAX_BODY_SIZE: 50m
     volumes:
-      - sites:/home/frappe/frappe-bench/sites
-      - logs:/home/frappe/frappe-bench/logs
+      - sites-${BRANCH_NAME}:/home/frappe/frappe-bench/sites
+      - logs-${BRANCH_NAME}:/home/frappe/frappe-bench/logs
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.erpnext-feature-cicd.rule=Host(`feature-cicd.161.97.174.134.sslip.io`)"
@@ -132,8 +121,6 @@ services:
 
   queue-long:
     image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest
-    networks:
-      - frappe_network
     deploy:
       restart_policy:
         condition: on-failure
@@ -143,13 +130,11 @@ services:
       - --queue
       - long,default,short
     volumes:
-      - sites:/home/frappe/frappe-bench/sites
-      - logs:/home/frappe/frappe-bench/logs
+      - sites-${BRANCH_NAME}:/home/frappe/frappe-bench/sites
+      - logs-${BRANCH_NAME}:/home/frappe/frappe-bench/logs
 
   queue-short:
     image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest
-    networks:
-      - frappe_network
     deploy:
       restart_policy:
         condition: on-failure
@@ -159,31 +144,25 @@ services:
       - --queue
       - short,default
     volumes:
-      - sites:/home/frappe/frappe-bench/sites
-      - logs:/home/frappe/frappe-bench/logs
+      - sites-${BRANCH_NAME}:/home/frappe/frappe-bench/sites
+      - logs-${BRANCH_NAME}:/home/frappe/frappe-bench/logs
 
   redis-queue:
     image: redis:6.2-alpine
-    networks:
-      - frappe_network
     deploy:
       restart_policy:
         condition: on-failure
     volumes:
-      - redis-queue-data:/data
+      - redis-queue-data-${BRANCH_NAME}:/data
 
   redis-cache:
     image: redis:6.2-alpine
-    networks:
-      - frappe_network
     deploy:
       restart_policy:
         condition: on-failure
 
   scheduler:
     image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest
-    networks:
-      - frappe_network
     deploy:
       restart_policy:
         condition: on-failure
@@ -191,13 +170,11 @@ services:
       - bench
       - schedule
     volumes:
-      - sites:/home/frappe/frappe-bench/sites
-      - logs:/home/frappe/frappe-bench/logs
+      - sites-${BRANCH_NAME}:/home/frappe/frappe-bench/sites
+      - logs-${BRANCH_NAME}:/home/frappe/frappe-bench/logs
 
   websocket:
     image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest
-    networks:
-      - frappe_network
     deploy:
       restart_policy:
         condition: on-failure
@@ -205,15 +182,11 @@ services:
       - node
       - /home/frappe/frappe-bench/apps/frappe/socketio.js
     volumes:
-      - sites:/home/frappe/frappe-bench/sites
-      - logs:/home/frappe/frappe-bench/logs
+      - sites-${BRANCH_NAME}:/home/frappe/frappe-bench/sites
+      - logs-${BRANCH_NAME}:/home/frappe/frappe-bench/logs
 
 volumes:
-  db-data:
-  redis-queue-data:
-  sites:
-  logs:
-
-networks:
-  frappe_network:
-    driver: bridge
+  db-data-${BRANCH_NAME}:
+  redis-queue-data-${BRANCH_NAME}:
+  sites-${BRANCH_NAME}:
+  logs-${BRANCH_NAME}:
