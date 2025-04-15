@@ -7,8 +7,8 @@ services:
       restart_policy:
         condition: on-failure
     volumes:
-      - sites-${BRANCH_NAME}:/home/frappe/frappe-bench/sites
-      - logs-${BRANCH_NAME}:/home/frappe/frappe-bench/logs
+      - sites-${BRANCH_SANITIZE}:/home/frappe/frappe-bench/sites
+      - logs-${BRANCH_SANITIZE}:/home/frappe/frappe-bench/logs
     environment:
       ADMIN_PASSWORD: admin
       DB_ROOT_USER: root
@@ -40,8 +40,8 @@ services:
       REDIS_QUEUE: redis-queue:6379
       SOCKETIO_PORT: "9000"
     volumes:
-      - sites-${BRANCH_NAME}:/home/frappe/frappe-bench/sites
-      - logs-${BRANCH_NAME}:/home/frappe/frappe-bench/logs
+      - sites-${BRANCH_SANITIZE}:/home/frappe/frappe-bench/sites
+      - logs-${BRANCH_SANITIZE}:/home/frappe/frappe-bench/logs
 
   create-site:
     image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest
@@ -49,8 +49,8 @@ services:
       restart_policy:
         condition: on-failure
     volumes:
-      - sites-${BRANCH_NAME}:/home/frappe/frappe-bench/sites
-      - logs-${BRANCH_NAME}:/home/frappe/frappe-bench/logs
+      - sites-${BRANCH_SANITIZE}:/home/frappe/frappe-bench/sites
+      - logs-${BRANCH_SANITIZE}:/home/frappe/frappe-bench/logs
     entrypoint:
       - bash
       - -c
@@ -91,7 +91,7 @@ services:
       MYSQL_ROOT_PASSWORD: admin
       MARIADB_ROOT_PASSWORD: admin
     volumes:
-      - db-data-${BRANCH_NAME}:/var/lib/mysql
+      - db-data-${BRANCH_SANITIZE}:/var/lib/mysql
 
   frontend:
     image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest
@@ -112,8 +112,8 @@ services:
       PROXY_READ_TIMEOUT: 120
       CLIENT_MAX_BODY_SIZE: 50m
     volumes:
-      - sites-${BRANCH_NAME}:/home/frappe/frappe-bench/sites
-      - logs-${BRANCH_NAME}:/home/frappe/frappe-bench/logs
+      - sites-${BRANCH_SANITIZE}:/home/frappe/frappe-bench/sites
+      - logs-${BRANCH_SANITIZE}:/home/frappe/frappe-bench/logs
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.erpnext-feature-cicd.rule=Host(`feature-cicd.161.97.174.134.sslip.io`)"
@@ -130,8 +130,8 @@ services:
       - --queue
       - long,default,short
     volumes:
-      - sites-${BRANCH_NAME}:/home/frappe/frappe-bench/sites
-      - logs-${BRANCH_NAME}:/home/frappe/frappe-bench/logs
+      - sites-${BRANCH_SANITIZE}:/home/frappe/frappe-bench/sites
+      - logs-${BRANCH_SANITIZE}:/home/frappe/frappe-bench/logs
 
   queue-short:
     image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest
@@ -144,8 +144,8 @@ services:
       - --queue
       - short,default
     volumes:
-      - sites-${BRANCH_NAME}:/home/frappe/frappe-bench/sites
-      - logs-${BRANCH_NAME}:/home/frappe/frappe-bench/logs
+      - sites-${BRANCH_SANITIZE}:/home/frappe/frappe-bench/sites
+      - logs-${BRANCH_SANITIZE}:/home/frappe/frappe-bench/logs
 
   redis-queue:
     image: redis:6.2-alpine
@@ -153,7 +153,7 @@ services:
       restart_policy:
         condition: on-failure
     volumes:
-      - redis-queue-data-${BRANCH_NAME}:/data
+      - redis-queue-data-${BRANCH_SANITIZE}:/data
 
   redis-cache:
     image: redis:6.2-alpine
@@ -170,8 +170,8 @@ services:
       - bench
       - schedule
     volumes:
-      - sites-${BRANCH_NAME}:/home/frappe/frappe-bench/sites
-      - logs-${BRANCH_NAME}:/home/frappe/frappe-bench/logs
+      - sites-${BRANCH_SANITIZE}:/home/frappe/frappe-bench/sites
+      - logs-${BRANCH_SANITIZE}:/home/frappe/frappe-bench/logs
 
   websocket:
     image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest
@@ -182,11 +182,11 @@ services:
       - node
       - /home/frappe/frappe-bench/apps/frappe/socketio.js
     volumes:
-      - sites-${BRANCH_NAME}:/home/frappe/frappe-bench/sites
-      - logs-${BRANCH_NAME}:/home/frappe/frappe-bench/logs
+      - sites-${BRANCH_SANITIZE}:/home/frappe/frappe-bench/sites
+      - logs-${BRANCH_SANITIZE}:/home/frappe/frappe-bench/logs
 
 volumes:
-  db-data-${BRANCH_NAME}:
-  redis-queue-data-${BRANCH_NAME}:
-  sites-${BRANCH_NAME}:
-  logs-${BRANCH_NAME}:
+  db-data-${BRANCH_SANITIZE}:
+  redis-queue-data-${BRANCH_SANITIZE}:
+  sites-${BRANCH_SANITIZE}:
+  logs-${BRANCH_SANITIZE}:
