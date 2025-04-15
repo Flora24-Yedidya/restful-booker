@@ -2,20 +2,22 @@ version: "3"
 
 services:
   backend:
-    image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest 
+    image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest
     networks:
       - frappe_network
     deploy:
       restart_policy:
         condition: on-failure
     volumes:
+      - ./init.sh:/init.sh
       - sites:/home/frappe/frappe-bench/sites
       - logs:/home/frappe/frappe-bench/logs
     environment:
+      ADMIN_PASSWORD: admin
+      DB_ROOT_USER: root
+      DB_ROOT_PASSWORD: admin
       DB_HOST: db
       DB_PORT: "3306"
-      MYSQL_ROOT_PASSWORD: admin
-      MARIADB_ROOT_PASSWORD: admin
 
   configurator:
     image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest
@@ -61,9 +63,9 @@ services:
       - -c
     command:
       - >
-        wait-for-it -t 120 db:3306;
-        wait-for-it -t 120 redis-cache:6379;
-        wait-for-it -t 120 redis-queue:6379;
+        wait-for-it -t 200 db:3306;
+        wait-for-it -t 200 redis-cache:6379;
+        wait-for-it -t 200 redis-queue:6379;
         export start=`date +%s`;
         until [[ -n `grep -hs ^ sites/common_site_config.json | jq -r ".db_host // empty"` ]] && \
           [[ -n `grep -hs ^ sites/common_site_config.json | jq -r ".redis_cache // empty"` ]] && \
