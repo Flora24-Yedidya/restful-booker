@@ -215,10 +215,3 @@ volumes:
 networks:
   frappe_network:
     driver: bridge
-
-
-        # echo "sites/common_site_config.json found";
-        # cd /home/frappe/frappe-bench/sites ;
-        # bench new-site site-cicd.local --admin-password=admin --db-root-username=root --db-root-password=admin --db-name=db_feature_cicd --set-default;
-        # bench --site site1.local install-app pibicut payments erpnext;
-        # bench --site site1.local migrate;
