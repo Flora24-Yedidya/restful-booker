@@ -97,7 +97,7 @@ services:
       - logs-feature-new:/home/frappe/frappe-bench/logs
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.erpnext-feature-new.rule=Host(`feature-new..161.97.174.134.sslip.io`)"
+      - "traefik.http.routers.erpnext-feature-new.rule=Host(`feature-new.161.97.174.134.sslip.io`)"
       - "traefik.http.services.erpnext-feature-new.loadbalancer.server.port=8080"
 
   queue-long-feature-new:
