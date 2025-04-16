@@ -1,8 +1,10 @@
 version: "3"
 
 services:
-  backend:
-    image: ghcr.io/devofs2/pro_erpnext_feature-new:latest
+  backend-feature-new:
+    image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest
+    networks:
+      - backend_network
     deploy:
       restart_policy:
         condition: on-failure
@@ -20,6 +22,8 @@ services:
 
   db-feature-new:
     image: mariadb:10.6
+    networks:
+      - backend_network
     environment:
       MYSQL_ROOT_PASSWORD: h123@
       MYSQL_USER: mariadb
@@ -30,8 +34,10 @@ services:
     networks:
       - backend_network
 
-  configurator:
-    image: ghcr.io/devofs2/pro_erpnext_feature-new:latest
+  configurator-feature-new:
+    image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest
+    networks:
+      - backend_network
     deploy:
       restart_policy:
         condition: on-failure
@@ -47,8 +53,10 @@ services:
       - sites-feature-new:/home/frappe/frappe-bench/sites
       - logs-feature-new:/home/frappe/frappe-bench/logs
 
-  create-site:
-    image: ghcr.io/devofs2/pro_erpnext_feature-new:latest
+  create-site-feature-new:
+    image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest
+    networks:
+      - backend_network
     deploy:
       restart_policy:
         condition: on-failure
@@ -58,8 +66,8 @@ services:
     command:
       - >
         wait-for-it -t 200 db-feature-new:3306;
-        wait-for-it -t 200 redis-cache:6379;
-        wait-for-it -t 200 redis-queue:6379;
+        wait-for-it -t 200 redis-cache-feature-new:6379;
+        wait-for-it -t 200 redis-queue-feature-new:6379;
         export start=`date +%s`;
         until [[ -n `grep -hs ^ sites/common_site_config.json | jq -r ".db_host // empty"` ]] && \
           [[ -n `grep -hs ^ sites/common_site_config.json | jq -r ".redis_cache // empty"` ]] && \
@@ -74,14 +82,16 @@ services:
         done;
         echo "sites/common_site_config.json found";
 
-  frontend:
-    image: ghcr.io/devofs2/pro_erpnext_feature-new:latest
+  frontend-feature-new:
+    image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest
+    networks:
+      - backend_network
     depends_on:
-      - websocket
+      - websocket-short-feature-new:
     command:
       - nginx-entrypoint.sh
     environment:
-      BACKEND: backend:8000
+      BACKEND: backend-feature-new:8000
       FRAPPE_SITE_NAME_HEADER: feature-new.local
       SOCKETIO: websocket:9000
     volumes:
@@ -91,6 +101,84 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.erpnext-feature-new.rule=Host(\`feature-new.sslip.io\`)"
       - "traefik.http.services.erpnext-feature-new.loadbalancer.server.port=8080"
+
+  queue-long-feature-new:
+    image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest
+    networks:
+      - backend_network
+    deploy:
+      restart_policy:
+        condition: on-failure
+    command:
+      - bench
+      - worker
+      - --queue
+      - long,default,short
+    volumes:
+      - sites-feature-new:/home/frappe/frappe-bench/sites
+      - logs-feature-new:/home/frappe/frappe-bench/logs
+
+  queue-short-feature-new:
+    image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest
+    networks:
+      - backend_network
+    deploy:
+      restart_policy:
+        condition: on-failure
+    command:
+      - bench
+      - worker
+      - --queue
+      - short,default
+    volumes:
+      - sites-short-feature-new:/home/frappe/frappe-bench/sites
+      - logs-short-feature-new:/home/frappe/frappe-bench/logs
+
+  redis-queue-short-feature-new:
+    image: redis:6.2-alpine
+    networks:
+      - backend_network
+    deploy:
+      restart_policy:
+        condition: on-failure
+    volumes:
+      - redis-queue-data-short-feature-new:/data
+
+  redis-cache-short-feature-new:
+    image: redis:6.2-alpine
+    networks:
+      - backend_network
+    deploy:
+      restart_policy:
+        condition: on-failure
+
+  scheduler-short-feature-new:
+    image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest
+    networks:
+      - backend_network
+    deploy:
+      restart_policy:
+        condition: on-failure
+    command:
+      - bench
+      - schedule
+    volumes:
+      - sites-short-feature-new:/home/frappe/frappe-bench/sites
+      - logs-short-feature-new:/home/frappe/frappe-bench/logs
+
+  websocket-short-feature-new:
+    image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest
+    networks:
+      - backend_network
+    deploy:
+      restart_policy:
+        condition: on-failure
+    command:
+      - node
+      - /home/frappe/frappe-bench/apps/frappe/socketio.js
+    volumes:
+      - sites-short-feature-new:/home/frappe/frappe-bench/sites
+      - logs-short-feature-new:/home/frappe/frappe-bench/logs
 
 networks:
   backend_network:
