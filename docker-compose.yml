@@ -31,8 +31,6 @@ services:
       MYSQL_DATABASE: db-feature-new  # Création d'une base de données spécifique à la branche
     volumes:
       - dbdata-feature-new:/var/lib/mysql
-    networks:
-      - backend_network
 
   configurator-feature-new:
     image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest
@@ -99,7 +97,7 @@ services:
       - logs-feature-new:/home/frappe/frappe-bench/logs
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.erpnext-feature-new.rule=Host(\`feature-new.sslip.io\`)"
+      - "traefik.http.routers.erpnext-feature-new.rule=Host(`feature-new..161.97.174.134.sslip.io`)"
       - "traefik.http.services.erpnext-feature-new.loadbalancer.server.port=8080"
 
   queue-long-feature-new:
