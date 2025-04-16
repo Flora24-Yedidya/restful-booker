@@ -2,67 +2,62 @@ version: "3"
 
 services:
   backend:
-    image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest
+    image: ghcr.io/devofs2/pro_erpnext_feature-new:latest
     deploy:
       restart_policy:
         condition: on-failure
     volumes:
-      - sites-${BRANCH_SANITIZE}:/home/frappe/frappe-bench/sites
-      - logs-${BRANCH_SANITIZE}:/home/frappe/frappe-bench/logs
+      - sites-feature-new:/home/frappe/frappe-bench/sites
+      - logs-feature-new:/home/frappe/frappe-bench/logs
     environment:
       - MYSQL_ROOT_PASSWORD=h123@
       - MYSQL_USER=mariadb
       - MYSQL_PASSWORD=456
-      - MYSQL_HOST=161.97.174.134
-      - MYSQL_PORT=3455
-      - MYSQL_DATABASE=default
-      - MYSQL_URL=mysql://mariadb:456@161.97.174.134:3455/default
+      - MYSQL_HOST=db-feature-new  # Conteneur DB spécifique à la branche
+      - MYSQL_PORT=3306
+      - MYSQL_DATABASE=db-feature-new  # Base de données spécifique à la branche
+      - MYSQL_URL=mysql://mariadb:456@db-feature-new:3306/db-feature-new
+
+  db-feature-new:
+    image: mariadb:10.6
+    environment:
+      MYSQL_ROOT_PASSWORD: h123@
+      MYSQL_USER: mariadb
+      MYSQL_PASSWORD: 456
+      MYSQL_DATABASE: db-feature-new  # Création d'une base de données spécifique à la branche
+    volumes:
+      - dbdata-feature-new:/var/lib/mysql
+    networks:
+      - backend_network
+
   configurator:
-    image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest
+    image: ghcr.io/devofs2/pro_erpnext_feature-new:latest
     deploy:
       restart_policy:
         condition: on-failure
-    entrypoint:
-      - bash
-      - -c
-    command:
-      - >
-        ls -1 apps > sites/apps.txt;
-        bench set-config -g db_host $$DB_HOST;
-        bench set-config -gp db_port $$DB_PORT;
-        bench set-config -g redis_cache "redis://$$REDIS_CACHE";
-        bench set-config -g redis_queue "redis://$$REDIS_QUEUE";
-        bench set-config -g redis_socketio "redis://$$REDIS_QUEUE";
-        bench set-config -gp socketio_port $$SOCKETIO_PORT;
     environment:
       - MYSQL_ROOT_PASSWORD=h123@
       - MYSQL_USER=mariadb
       - MYSQL_PASSWORD=456
-      - MYSQL_HOST=161.97.174.134
-      - MYSQL_PORT=3455
-      - MYSQL_DATABASE=default
-      - MYSQL_URL=mysql://mariadb:456@161.97.174.134:3455/default
-      - REDIS_CACHE=redis-cache:6379
-      - REDIS_QUEUE=redis-queue:6379
-      - SOCKETIO_PORT=9000
+      - MYSQL_HOST=db-feature-new
+      - MYSQL_PORT=3306
+      - MYSQL_DATABASE=db-feature-new
+      - MYSQL_URL=mysql://mariadb:456@db-feature-new:3306/db-feature-new
     volumes:
-      - sites-${BRANCH_SANITIZE}:/home/frappe/frappe-bench/sites
-      - logs-${BRANCH_SANITIZE}:/home/frappe/frappe-bench/logs
+      - sites-feature-new:/home/frappe/frappe-bench/sites
+      - logs-feature-new:/home/frappe/frappe-bench/logs
 
   create-site:
-    image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest
+    image: ghcr.io/devofs2/pro_erpnext_feature-new:latest
     deploy:
       restart_policy:
         condition: on-failure
-    volumes:
-      - sites-${BRANCH_SANITIZE}:/home/frappe/frappe-bench/sites
-      - logs-${BRANCH_SANITIZE}:/home/frappe/frappe-bench/logs
     entrypoint:
       - bash
       - -c
     command:
       - >
-        wait-for-it -t 200 161.97.174.134:3455;
+        wait-for-it -t 200 db-feature-new:3306;
         wait-for-it -t 200 redis-cache:6379;
         wait-for-it -t 200 redis-queue:6379;
         export start=`date +%s`;
@@ -80,101 +75,27 @@ services:
         echo "sites/common_site_config.json found";
 
   frontend:
-    image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest
+    image: ghcr.io/devofs2/pro_erpnext_feature-new:latest
     depends_on:
       - websocket
-    deploy:
-      restart_policy:
-        condition: on-failure
     command:
       - nginx-entrypoint.sh
     environment:
       BACKEND: backend:8000
-      FRAPPE_SITE_NAME_HEADER: site1.local
+      FRAPPE_SITE_NAME_HEADER: feature-new.local
       SOCKETIO: websocket:9000
-      UPSTREAM_REAL_IP_ADDRESS: 127.0.0.1
-      UPSTREAM_REAL_IP_HEADER: X-Forwarded-For
-      UPSTREAM_REAL_IP_RECURSIVE: "off"
-      PROXY_READ_TIMEOUT: 120
-      CLIENT_MAX_BODY_SIZE: 50m
     volumes:
-      - sites-${BRANCH_SANITIZE}:/home/frappe/frappe-bench/sites
-      - logs-${BRANCH_SANITIZE}:/home/frappe/frappe-bench/logs
+      - sites-feature-new:/home/frappe/frappe-bench/sites
+      - logs-feature-new:/home/frappe/frappe-bench/logs
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.erpnext-feature-cicd.rule=Host(`feature-new.161.97.174.134.sslip.io`)"
-      - "traefik.http.services.erpnext-feature-cicd.loadbalancer.server.port=8080"
+      - "traefik.http.routers.erpnext-feature-new.rule=Host(\`feature-new.sslip.io\`)"
+      - "traefik.http.services.erpnext-feature-new.loadbalancer.server.port=8080"
 
-  queue-long:
-    image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest
-    deploy:
-      restart_policy:
-        condition: on-failure
-    command:
-      - bench
-      - worker
-      - --queue
-      - long,default,short
-    volumes:
-      - sites-${BRANCH_SANITIZE}:/home/frappe/frappe-bench/sites
-      - logs-${BRANCH_SANITIZE}:/home/frappe/frappe-bench/logs
-
-  queue-short:
-    image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest
-    deploy:
-      restart_policy:
-        condition: on-failure
-    command:
-      - bench
-      - worker
-      - --queue
-      - short,default
-    volumes:
-      - sites-${BRANCH_SANITIZE}:/home/frappe/frappe-bench/sites
-      - logs-${BRANCH_SANITIZE}:/home/frappe/frappe-bench/logs
-
-  redis-queue:
-    image: redis:6.2-alpine
-    deploy:
-      restart_policy:
-        condition: on-failure
-    volumes:
-      - redis-queue-data-${BRANCH_SANITIZE}:/data
-
-  redis-cache:
-    image: redis:6.2-alpine
-    deploy:
-      restart_policy:
-        condition: on-failure
-
-  scheduler:
-    image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest
-    deploy:
-      restart_policy:
-        condition: on-failure
-    command:
-      - bench
-      - schedule
-    volumes:
-      - sites-${BRANCH_SANITIZE}:/home/frappe/frappe-bench/sites
-      - logs-${BRANCH_SANITIZE}:/home/frappe/frappe-bench/logs
-
-  websocket:
-    image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest
-    deploy:
-      restart_policy:
-        condition: on-failure
-    command:
-      - node
-      - /home/frappe/frappe-bench/apps/frappe/socketio.js
-    volumes:
-      - sites-${BRANCH_SANITIZE}:/home/frappe/frappe-bench/sites
-      - logs-${BRANCH_SANITIZE}:/home/frappe/frappe-bench/logs
+networks:
+  backend_network:
 
 volumes:
-  db-data-${BRANCH_SANITIZE}:
-  redis-queue-data-${BRANCH_SANITIZE}:
-  sites-${BRANCH_SANITIZE}:
-  logs-${BRANCH_SANITIZE}:
-
-#thanks
+  dbdata-feature-new:  # Volume dédié à la DB spécifique à la branche
+  sites-feature-new:    # Volume pour les sites ERPNext de cette branche
+  logs-feature-new:     # Volume pour les logs spécifiques à cette branche
