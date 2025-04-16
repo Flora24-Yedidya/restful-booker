@@ -85,7 +85,7 @@ services:
     networks:
       - backend_network
     depends_on:
-      - websocket-short-feature-new:
+      - websocket-short-feature-new
     command:
       - nginx-entrypoint.sh
     environment:
