@@ -14,10 +14,9 @@ services:
       - MYSQL_USER=mariadb
       - MYSQL_PASSWORD=123
       - MYSQL_HOST=161.97.174.134
-      - MYSQL_PORT=5432
+      - MYSQL_PORT=5434
       - MYSQL_DATABASE=default
-      - MYSQL_URL=mysql://mariadb:GTwxGIIUSshWdq51qnhEbZ3Z8QcmXkZt3dO06bLBFLPd2rQkvP5PxhltKf0guaYH@161.97.174.134:5432/default
-
+      - MYSQL_URL=mysql://mariadb:123@161.97.174.134:5434/default
   configurator:
     image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest
     deploy:
@@ -40,9 +39,9 @@ services:
       - MYSQL_USER=mariadb
       - MYSQL_PASSWORD=123
       - MYSQL_HOST=161.97.174.134
-      - MYSQL_PORT=5432
+      - MYSQL_PORT=5434
       - MYSQL_DATABASE=default
-      - MYSQL_URL=mysql://mariadb:GTwxGIIUSshWdq51qnhEbZ3Z8QcmXkZt3dO06bLBFLPd2rQkvP5PxhltKf0guaYH@161.97.174.134:5432/default
+      - MYSQL_URL=mysql://mariadb:123@161.97.174.134:5434/default
       - REDIS_CACHE=redis-cache:6379
       - REDIS_QUEUE=redis-queue:6379
       - SOCKETIO_PORT=9000
@@ -63,7 +62,7 @@ services:
       - -c
     command:
       - >
-        wait-for-it -t 200 mariadb:3306;
+        wait-for-it -t 200 161.97.174.134:5434;
         wait-for-it -t 200 redis-cache:6379;
         wait-for-it -t 200 redis-queue:6379;
         export start=`date +%s`;
