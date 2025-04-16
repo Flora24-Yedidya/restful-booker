@@ -13,10 +13,10 @@ services:
       - MYSQL_ROOT_PASSWORD=hello
       - MYSQL_USER=mariadb
       - MYSQL_PASSWORD=123
-      - MYSQL_HOST=161.97.174.134
-      - MYSQL_PORT=5434
+      - MYSQL_HOST=y0404k4g8kggco80skwgccs0
+      - MYSQL_PORT=3306
       - MYSQL_DATABASE=default
-      - MYSQL_URL=mysql://mariadb:123@161.97.174.134:5434/default
+      - MYSQL_URL=mysql://mariadb:123@y0404k4g8kggco80skwgccs0:3306/default
   configurator:
     image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest
     deploy:
@@ -38,10 +38,10 @@ services:
       - MYSQL_ROOT_PASSWORD=hello
       - MYSQL_USER=mariadb
       - MYSQL_PASSWORD=123
-      - MYSQL_HOST=161.97.174.134
-      - MYSQL_PORT=5434
+      - MYSQL_HOST=y0404k4g8kggco80skwgccs0
+      - MYSQL_PORT=3306
       - MYSQL_DATABASE=default
-      - MYSQL_URL=mysql://mariadb:123@161.97.174.134:5434/default
+      - MYSQL_URL=mysql://mariadb:123@y0404k4g8kggco80skwgccs0:3306/default
       - REDIS_CACHE=redis-cache:6379
       - REDIS_QUEUE=redis-queue:6379
       - SOCKETIO_PORT=9000
@@ -62,7 +62,7 @@ services:
       - -c
     command:
       - >
-        wait-for-it -t 200 161.97.174.134:5434;
+        wait-for-it -t 200 y0404k4g8kggco80skwgccs0:3306;
         wait-for-it -t 200 redis-cache:6379;
         wait-for-it -t 200 redis-queue:6379;
         export start=`date +%s`;
