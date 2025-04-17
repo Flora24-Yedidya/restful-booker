@@ -10,13 +10,13 @@ services:
       - sites-feature-new:/home/frappe/frappe-bench/sites
       - logs-feature-new:/home/frappe/frappe-bench/logs
     environment:
-      - MYSQL_ROOT_PASSWORD=h123@
+      - MYSQL_ROOT_PASSWORD=abc
       - MYSQL_USER=mariadb
-      - MYSQL_PASSWORD=456
-      - MYSQL_HOST=eg80g0wsogwo844kks44wss0
+      - MYSQL_PASSWORD=efg
+      - MYSQL_HOST=awcck0kk8s8s0kw0oc4wkk40
       - MYSQL_PORT=3306
       - MYSQL_DATABASE=default
-      - MYSQL_URL=mysql://mariadb:456@eg80g0wsogwo844kks44wss0:3306/default
+      - MYSQL_URL=mysql://mariadb:efg@awcck0kk8s8s0kw0oc4wkk40:3306/default
       
   configurator:
     image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest
@@ -42,7 +42,7 @@ services:
       - MYSQL_HOST=eg80g0wsogwo844kks44wss0
       - MYSQL_PORT=3306
       - MYSQL_DATABASE=default
-      - MYSQL_URL=mysql://mariadb:456@eg80g0wsogwo844kks44wss0:3306/default
+      - MYSQL_URL=mysql://mariadb:efg@awcck0kk8s8s0kw0oc4wkk40:3306/default
       - REDIS_CACHE=redis-cache-feature-new:6379
       - REDIS_QUEUE=redis-queue-feature-new:6379
       - SOCKETIO_PORT=9000
@@ -63,7 +63,7 @@ services:
       - -c
     command:
       - >
-        wait-for-it -t 200 eg80g0wsogwo844kks44wss0:3306;
+        wait-for-it -t 200 awcck0kk8s8s0kw0oc4wkk40:3306;
         wait-for-it -t 200 redis-cache-feature-new:6379;
         wait-for-it -t 200 redis-queue-feature-new:6379;
         export start=`date +%s`;
@@ -103,7 +103,7 @@ services:
       - logs-feature-new:/home/frappe/frappe-bench/logs
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.erpnext-feature-new.rule=Host(`feature-new.161.97.174.134.sslip.io`)"
+      - "traefik.http.routers.erpnext-feature-new.rule=Host(`kccw8sk0gg8s0gggo8sgcsos.161.97.174.134.sslip.io`)"
       - "traefik.http.services.erpnext-feature-new.loadbalancer.server.port=8080"
 
   queue-long:
