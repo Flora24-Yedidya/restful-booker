@@ -17,6 +17,7 @@ services:
       - MYSQL_PORT=3306
       - MYSQL_DATABASE=default
       - MYSQL_URL=mysql://mariadb:456@eg80g0wsogwo844kks44wss0:3306/default
+      
   configurator:
     image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest
     deploy:
@@ -42,8 +43,8 @@ services:
       - MYSQL_PORT=3306
       - MYSQL_DATABASE=default
       - MYSQL_URL=mysql://mariadb:456@eg80g0wsogwo844kks44wss0:3306/default
-      - REDIS_CACHE=redis-cache:6379
-      - REDIS_QUEUE=redis-queue:6379
+      - REDIS_CACHE=redis-cache-feature-new:6379
+      - REDIS_QUEUE=redis-queue-feature-new:6379
       - SOCKETIO_PORT=9000
     volumes:
       - sites-feature-new:/home/frappe/frappe-bench/sites
@@ -63,8 +64,8 @@ services:
     command:
       - >
         wait-for-it -t 200 eg80g0wsogwo844kks44wss0:3306;
-        wait-for-it -t 200 redis-cache:6379;
-        wait-for-it -t 200 redis-queue:6379;
+        wait-for-it -t 200 redis-cache-feature-new:6379;
+        wait-for-it -t 200 redis-queue-feature-new:6379;
         export start=`date +%s`;
         until [[ -n `grep -hs ^ sites/common_site_config.json | jq -r ".db_host // empty"` ]] && \
           [[ -n `grep -hs ^ sites/common_site_config.json | jq -r ".redis_cache // empty"` ]] && \
@@ -135,6 +136,7 @@ services:
 
   redis-queue:
     image: redis:6.2-alpine
+    container_name: redis-queue-feature-new
     deploy:
       restart_policy:
         condition: on-failure
@@ -143,6 +145,7 @@ services:
 
   redis-cache:
     image: redis:6.2-alpine
+    container_name: redis-cache-feature-new
     deploy:
       restart_policy:
         condition: on-failure
