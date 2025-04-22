@@ -58,7 +58,7 @@ CREATE_DB_RESPONSE=$(curl -s https://app.coolify.io/api/v1/databases/mariadb \
 NEW_DB_UUID=$(echo "$CREATE_DB_RESPONSE" | jq -r '.uuid')
 
 # Vérifier si la création a réussi et afficher le nouvel UUID
-if [ "$NEW_DB_UUID" || "$NEW_DB_UUID" == "null" ]; then
+if [ -z "$NEW_DB_UUID" ] || [ "$NEW_DB_UUID" == "null" ]; then
   echo "Erreur lors de la création de la base de données. Réponse API: $CREATE_DB_RESPONSE"
   exit 1
 fi
