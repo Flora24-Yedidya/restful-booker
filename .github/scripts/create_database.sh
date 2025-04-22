@@ -61,6 +61,7 @@ NEW_DB_UUID=$(echo "$CREATE_DB_RESPONSE" | jq -r '.uuid')
 # Vérifier si la création a réussi et afficher le nouvel UUID
 if [ "$NEW_DB_UUID" != "null" ]; then
   echo "Nouvelle base de données créée avec UUID: $NEW_DB_UUID"
+  echo "db_uuid=$NEW_DB_UUID" >> $GITHUB_ENV
 else
   echo "Erreur lors de la création de la base de données."
   echo "$CREATE_DB_RESPONSE"
