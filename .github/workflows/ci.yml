@@ -67,7 +67,7 @@ jobs:
 
   deploy-app:
     runs-on: ubuntu-latest
-    # needs: build-and-push
+    needs: build-and-push
     env:
       COOLIFY_API_KEY: ${{ secrets.COOLIFY_API_KEY }}
       PROJECT_UUID: "oo0o044sk8woco480k8occk0"
@@ -75,21 +75,21 @@ jobs:
       BRANCH_SANITIZE: $BRANCH_SANITIZE
 
     steps:
-      # - name: Download Docker Compose & Env Files
-      #   uses: actions/download-artifact@v4
-      #   with:
-      #     name: docker-compose-files
-      #     path: .
+      - name: Download Docker Compose & Env Files
+        uses: actions/download-artifact@v4
+        with:
+          name: docker-compose-files
+          path: .
       
-      # - name: Install jq
-      #   run: sudo apt-get install jq -y
+      - name: Install jq
+        run: sudo apt-get install jq -y
 
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      # - name: Checkout repository
+      #   uses: actions/checkout@v3
       
-      # - name: Load environment variables
-      #   run: |
-      #     cat .env >> $GITHUB_ENV
+      - name: Load environment variables
+        run: |
+          cat .env >> $GITHUB_ENV
       
       - name: Set execute permissions
         run: chmod +x .github/scripts/*.sh
