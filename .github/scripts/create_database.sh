@@ -25,7 +25,7 @@ EXISTING_DB_UUID=$(curl -s -X GET "https://app.coolify.io/api/v1/databases" \
 if [[ -n "$EXISTING_DB_UUID" ]]; then
 #  echo "Base de données trouvée (UUID: $EXISTING_DB_UUID), suppression..."
   curl -s -X DELETE "https://app.coolify.io/api/v1/databases/$EXISTING_DB_UUID" \
-    -H "Authorization: Bearer $COOLIFY_API_KEY"
+    -H "Authorization: Bearer $COOLIFY_API_KEY" > /dev/null
 #  echo "Suppression effectuée."
   sleep 5  # On attend quelques secondes pour que la suppression soit bien prise en compte
 # else
