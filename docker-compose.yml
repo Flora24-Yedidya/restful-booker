@@ -10,13 +10,13 @@ services:
       - sites-feature-cicd:/home/frappe/frappe-bench/sites
       - logs-feature-cicd:/home/frappe/frappe-bench/logs
     environment:
-      - MYSQL_ROOT_PASSWORD=$MARIADB_ROOT_PASSWORD
-      - MYSQL_USER=$MARIADB_USER
-      - MYSQL_PASSWORD=$MARIADB_PASSWORD
+      - MYSQL_ROOT_PASSWORD=ofs1
+      - MYSQL_USER=mariadb
+      - MYSQL_PASSWORD=123456
       - MYSQL_HOST=$DB_UUID
       - MYSQL_PORT=3306
       - MYSQL_DATABASE=default
-      - MYSQL_URL=mysql://$MARIADB_USER:$MARIADB_PASSWORD@$DB_UUID:3306/default
+      - MYSQL_URL=mysql://mariadb:123456@$DB_UUID:3306/default
 
 
   configurator:
@@ -37,13 +37,13 @@ services:
         bench set-config -g redis_socketio "redis://$$REDIS_QUEUE";
         bench set-config -gp socketio_port $$SOCKETIO_PORT;
     environment:
-      - MYSQL_ROOT_PASSWORD=$MARIADB_ROOT_PASSWORD
-      - MYSQL_USER=$MARIADB_USER
-      - MYSQL_PASSWORD=$MARIADB_PASSWORD
+      - MYSQL_ROOT_PASSWORD=ofs1
+      - MYSQL_USER=mariadb
+      - MYSQL_PASSWORD=123456
       - MYSQL_HOST=$DB_UUID
       - MYSQL_PORT=3306
       - MYSQL_DATABASE=default
-      - MYSQL_URL=mysql://$MARIADB_USER:$MARIADB_PASSWORD@$DB_UUID:3306/default
+      - MYSQL_URL=mysql://mariadb:123456@$DB_UUID:3306/default
       - REDIS_CACHE=redis-cache:6379
       - REDIS_QUEUE=redis-queue:6379
       - SOCKETIO_PORT=9000
