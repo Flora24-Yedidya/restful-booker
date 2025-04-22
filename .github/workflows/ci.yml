@@ -91,6 +91,9 @@ jobs:
         id: create_db
         run: |
          ./.github/scripts/create_database.sh
+         #Remplacement des variables dans docker-compose.yml
+         sed -i "s|\${NEW_UUID}|$NEW_UUID|g" docker-compose.yml
+         head -n 30 docker-compose.yml
 
       # - name: Download Docker Compose & Env Files
       #   uses: actions/download-artifact@v4
