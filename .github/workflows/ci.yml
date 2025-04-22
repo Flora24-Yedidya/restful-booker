@@ -37,16 +37,16 @@ jobs:
           echo "BRANCH_NAME=$branch_name" >> $GITHUB_ENV
           echo "BRANCH_SANITIZE=$branch_sanitize" >> $GITHUB_ENV
 
-      # - name: Build & Push Docker Image
-      #   run: |
-      #     sed -i "s|\${AUTH_TOKEN}|${{ secrets.AUTH_TOKEN }}|g" ./resources/apps.json
-      #     IMAGE_NAME="ghcr.io/devofs2/pro_erpnext_$BRANCH_SANITIZE:latest"
-      #     echo "Building and pushing image: $IMAGE_NAME"
-      #     echo "IMAGE_NAME=$IMAGE_NAME" >> .env
-      #     echo "REGISTRY_PASSWORD=${{ secrets.GHCR_TOKEN }}" >> .env
-      #     echo "REGISTRY_OWNER=devofs2" >> .env
-      #     echo "BRANCH_NAME=$BRANCH_NAME" >> .env
-      #     echo "BRANCH_SANITIZE=$BRANCH_SANITIZE" >> .env
+      - name: Build & Push Docker Image
+        run: |
+          # sed -i "s|\${AUTH_TOKEN}|${{ secrets.AUTH_TOKEN }}|g" ./resources/apps.json
+          # IMAGE_NAME="ghcr.io/devofs2/pro_erpnext_$BRANCH_SANITIZE:latest"
+          # echo "Building and pushing image: $IMAGE_NAME"
+          # echo "IMAGE_NAME=$IMAGE_NAME" >> .env
+          # echo "REGISTRY_PASSWORD=${{ secrets.GHCR_TOKEN }}" >> .env
+          # echo "REGISTRY_OWNER=devofs2" >> .env
+          echo "BRANCH_NAME=$BRANCH_NAME" >> .env
+          echo "BRANCH_SANITIZE=$BRANCH_SANITIZE" >> .env
 
       #     #Remplacement des variables dans docker-compose.yml
       #     sed -i "s|\${BRANCH_SANITIZE}|$BRANCH_SANITIZE|g" docker-compose.yml
