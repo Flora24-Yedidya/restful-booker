@@ -61,9 +61,11 @@ NEW_DB_UUID=$(echo "$CREATE_DB_RESPONSE" | jq -r '.uuid')
 if [ -z "$NEW_DB_UUID" ] || [ "$NEW_DB_UUID" == "null" ]; then
   echo "Erreur lors de la création de la base de données. Réponse API: $CREATE_DB_RESPONSE"
   exit 1
+else
+  echo "$NEW_DB_UUID"
 fi
 
-echo "$NEW_DB_UUID"
+
 
 # if [ "$NEW_DB_UUID" != "null" ]; then
 #   echo "Nouvelle base de données créée avec UUID: $NEW_DB_UUID"
