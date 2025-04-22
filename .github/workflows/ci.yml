@@ -104,7 +104,7 @@ jobs:
       - name: Check app
         id: check_app
         run: |
-          RESULT=$(./.github/scripts/check_and_create_app.sh $PROJECT_UUID $BRANCH_SANITIZE $BRANCH_NAME)
+          RESULT=$(./.github/scripts/check_and_create_app.sh $PROJECT_UUID $BRANCH_NAME $BRANCH_SANITIZE )
           echo "$RESULT"
           echo "APP_UUID=$RESPONSE" >> $GITHUB_ENV
 
