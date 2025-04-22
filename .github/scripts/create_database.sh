@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # Variables nécessaires
+COOLIFY_API_KEY="650|qUSFPJs5qSbfYm0Ek8IPmjSC16K6TZ1uNmsbCxh0fff34c47"
 PROJECT_UUID="oo0o044sk8woco480k8occk0"  # UUID du projet
 SERVER_UUID="hc0cok0o4ks0cgc4w8ksgscs"  # UUID du serveur
 ENVIRONMENT_NAME="feature-pipeline"  # Nom de l'environnement
@@ -12,31 +13,31 @@ DATABASE_NAME="db-feature-pipeline"  # Nom de la base de données
 DESCRIPTION="Database pour feature-pipeline"  # Description
 IMAGE="mariadb:10.6"  # Image Docker
 
-# Récupérer les bases de données existantes dans le projet
-echo "Vérification des bases de données existantes dans le projet..."
 
-EXISTING_DB_UUID=$(curl -s https://app.coolify.io/api/v1/projects/$PROJECT_UUID/resources | \
-  jq -r '.[] | select(.type == "mariadb") | .uuid')
+# Récupérer la liste des bases de données existantes dans le projet
+EXISTING_DB_UUID=$(curl -s -X GET "https://app.coolify.io/api/v1/databases" \
+  --header "Authorization: Bearer $COOLIFY_API_KEY" \
+  | jq -r ".[] | select(.name==\"$DB_NAME\" and .type==\"database\") | .uuid")
 
-if [ "$EXISTING_DB_UUID" != "null" ]; then
-  echo "Base de données existante trouvée avec UUID: $EXISTING_DB_UUID"
-  
-  # Supprimer la base de données existante
-  echo "Suppression de la base de données existante..."
-  curl -s -X DELETE https://app.coolify.io/api/v1/databases/mariadb/$EXISTING_DB_UUID \
-    --header "Authorization: Bearer YOUR_API_KEY" \
-    --header "Content-Type: application/json"
-  echo "Base de données supprimée."
+
+# Si la DB existe, on la supprime
+if [[ -n "$EXISTING_DB_UUID" ]]; then
+  echo "Base de données trouvée, suppression..."
+  curl -s -X DELETE "https://app.coolify.io/api/v1/databases/$DB_UUID" \
+    -H "Authorization: Bearer $COOLIFY_API_KEY"
+  echo "Suppression effectuée."
+  sleep 5  # On attend quelques secondes pour que la suppression soit bien prise en compte
 else
-  echo "Aucune base de données existante trouvée."
+  echo "Aucune base trouvée, on continue."
 fi
+
 
 # Créer une nouvelle base de données
 echo "Création de la nouvelle base de données..."
 
 CREATE_DB_RESPONSE=$(curl -s https://app.coolify.io/api/v1/databases/mariadb \
   --request POST \
-  --header "Authorization: Bearer YOUR_API_KEY" \
+  --header "Authorization: Bearer $COOLIFY_API_KEY" \
   --header "Content-Type: application/json" \
   --data '{
     "server_uuid": "'"$SERVER_UUID"'",
