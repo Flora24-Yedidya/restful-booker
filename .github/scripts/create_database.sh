@@ -17,13 +17,13 @@ IMAGE="mariadb:10.6"  # Image Docker
 # Récupérer la liste des bases de données existantes dans le projet
 EXISTING_DB_UUID=$(curl -s -X GET "https://app.coolify.io/api/v1/databases" \
   --header "Authorization: Bearer $COOLIFY_API_KEY" \
-  | jq -r ".[] | select(.name==\"$DB_NAME\" and .type==\"database\") | .uuid")
+  | jq -r ".[] | select(.name==\"$DATABASE_NAME\" and .type==\"database\") | .uuid")
 
 
 # Si la DB existe, on la supprime
 if [[ -n "$EXISTING_DB_UUID" ]]; then
-  echo "Base de données trouvée, suppression..."
-  curl -s -X DELETE "https://app.coolify.io/api/v1/databases/$DB_UUID" \
+  echo "Base de données trouvée (UUID: $EXISTING_DB_UUID), suppression..."
+  curl -s -X DELETE "https://app.coolify.io/api/v1/databases/$EXISTING_DB_UUID" \
     -H "Authorization: Bearer $COOLIFY_API_KEY"
   echo "Suppression effectuée."
   sleep 5  # On attend quelques secondes pour que la suppression soit bien prise en compte
