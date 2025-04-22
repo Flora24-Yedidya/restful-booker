@@ -23,18 +23,18 @@ EXISTING_DB_UUID=$(curl -s -X GET "https://app.coolify.io/api/v1/databases" \
 
 # Si la DB existe, on la supprime
 if [[ -n "$EXISTING_DB_UUID" ]]; then
-  echo "Base de données trouvée (UUID: $EXISTING_DB_UUID), suppression..."
+#  echo "Base de données trouvée (UUID: $EXISTING_DB_UUID), suppression..."
   curl -s -X DELETE "https://app.coolify.io/api/v1/databases/$EXISTING_DB_UUID" \
     -H "Authorization: Bearer $COOLIFY_API_KEY"
-  echo "Suppression effectuée."
+#  echo "Suppression effectuée."
   sleep 5  # On attend quelques secondes pour que la suppression soit bien prise en compte
-else
-  echo "Aucune base trouvée, on continue."
+# else
+#   echo "Aucune base trouvée, on continue."
 fi
 
 
 # Créer une nouvelle base de données
-echo "Création de la nouvelle base de données..."
+# echo "Création de la nouvelle base de données..."
 
 CREATE_DB_RESPONSE=$(curl -s https://app.coolify.io/api/v1/databases/mariadb \
   --request POST \
@@ -58,10 +58,17 @@ CREATE_DB_RESPONSE=$(curl -s https://app.coolify.io/api/v1/databases/mariadb \
 NEW_DB_UUID=$(echo "$CREATE_DB_RESPONSE" | jq -r '.uuid')
 
 # Vérifier si la création a réussi et afficher le nouvel UUID
-if [ "$NEW_DB_UUID" != "null" ]; then
-  echo "Nouvelle base de données créée avec UUID: $NEW_DB_UUID"
-  echo "NEW_DB_UUID=$NEW_DB_UUID" >> $GITHUB_ENV
-else
-  echo "Erreur lors de la création de la base de données."
-  echo "$CREATE_DB_RESPONSE"
+if [ "$NEW_DB_UUID" || "$NEW_DB_UUID" == "null" ]; then
+  echo "Erreur lors de la création de la base de données. Réponse API: $CREATE_DB_RESPONSE"
+  exit 1
 fi
+
+echo "$NEW_DB_UUID"
+
+# if [ "$NEW_DB_UUID" != "null" ]; then
+#   echo "Nouvelle base de données créée avec UUID: $NEW_DB_UUID"
+#   echo "NEW_DB_UUID=$NEW_DB_UUID" >> $GITHUB_ENV
+# else
+#   echo "Erreur lors de la création de la base de données."
+#   echo "$CREATE_DB_RESPONSE"
+# fi

@@ -94,14 +94,17 @@ jobs:
       - name: delete & create database
         id: create_db
         run: |
-         ./.github/scripts/create_database.sh
+         DB_UUID=(./.github/scripts/create_database.sh)
          #Remplacement des variables dans docker-compose.yml
-         echo "$NEW_DB_UUID"
-         sed -i "s|\${NEW_DB_UUID}|$NEW_DB_UUID|g" docker-compose.yml
+         echo "$DB_UUID"
+         echo "DB_UUID=$DB_UUID" >> $GITHUB_ENV
+
+         sed -i "s|\${DB_UUID}|$DB_UUID|g" docker-compose.yml
          sed -i "s|\${MARIADB_ROOT_PASSWORD}|$MARIADB_ROOT_PASSWORD|g" docker-compose.yml
          sed -i "s|\${MARIADB_USER}|$MARIADB_USER|g" docker-compose.yml
          sed -i "s|\${MARIADB_PASSWORD}|$MARIADB_PASSWORD|g" docker-compose.yml
          head -n 30 docker-compose.yml
+
 
       # - name: Download Docker Compose & Env Files
       #   uses: actions/download-artifact@v4
