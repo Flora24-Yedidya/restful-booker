@@ -5,7 +5,7 @@ COOLIFY_API_KEY="650|qUSFPJs5qSbfYm0Ek8IPmjSC16K6TZ1uNmsbCxh0fff34c47"
 PROJECT_UUID="oo0o044sk8woco480k8occk0"  # UUID du projet
 SERVER_UUID="hc0cok0o4ks0cgc4w8ksgscs"  # UUID du serveur
 ENVIRONMENT_NAME="feature-pipeline"  # Nom de l'environnement
-MARIADB_CONF="W215c3FsZF0KYmluZC1hZGRyZXNzID0gMC4wLjAuMApjaGFyYWN0ZXItc2V0LXNlcnZlciA9IHV0ZjhtYjQKY29sbGF0aW9uLXNlcnZlciA9IHV0ZjhtYjRfdW5pY29rZV9jaQpza2lwLWNoYXJhY3Rlci1zZXQtY2xpZW50LWhhbmRzaGFrZQ=="  # Base64 de mariadb.conf
+MARIADB_CONF="W215c3FsZF0KYmluZC1hZGRyZXNzID0gMC4wLjAuMApjaGFyYWN0ZXItc2V0LXNlcnZlciA9IHV0ZjhtYjQKY29sbGF0aW9uLXNlcnZlciA9IHV0ZjhtYjRfdW5pY29kZV9jaQpza2lwLWNoYXJhY3Rlci1zZXQtY2xpZW50LWhhbmRzaGFrZQ"  # Base64 de mariadb.conf
 MARIADB_ROOT_PASSWORD="ofs1"  # Mot de passe root de MariaDB
 MARIADB_USER="mariadb"  # Utilisateur MariaDB
 MARIADB_PASSWORD="123456"  # Mot de passe de l'utilisateur
