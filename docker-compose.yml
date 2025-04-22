@@ -2,13 +2,13 @@ version: "3"
 
 services:
   backend:
-    image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest
+    image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest #ghcr.io/devofs2/pro_erpnext_${BRANCH_SANITIZE}:latest
     deploy:
       restart_policy:
         condition: on-failure
     volumes:
-      - sites-feature-cicd:/home/frappe/frappe-bench/sites
-      - logs-feature-cicd:/home/frappe/frappe-bench/logs
+      - sites-feature-cicd:/home/frappe/frappe-bench/sites #sites-${BRANCH_SANITIZE}:/home/frappe/frappe-bench/sites 
+      - logs-feature-cicd:/home/frappe/frappe-bench/logs #logs-${BRANCH_SANITIZE}:/home/frappe/frappe-bench/logs
     environment:
       - MYSQL_ROOT_PASSWORD=ofs1
       - MYSQL_USER=mariadb
@@ -20,7 +20,7 @@ services:
 
 
   configurator:
-    image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest
+    image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest #ghcr.io/devofs2/pro_erpnext_${BRANCH_SANITIZE}:latest
     deploy:
       restart_policy:
         condition: on-failure
@@ -50,15 +50,19 @@ services:
     volumes:
       - sites-feature-cicd:/home/frappe/frappe-bench/sites
       - logs-feature-cicd:/home/frappe/frappe-bench/logs
+      # - sites-${BRANCH_SANITIZE}:/home/frappe/frappe-bench/sites
+      # - logs-${BRANCH_SANITIZE}:/home/frappe/frappe-bench/logs
 
   create-site:
-    image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest
+    image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest #ghcr.io/devofs2/pro_erpnext_${BRANCH_SANITIZE}:latest
     deploy:
       restart_policy:
         condition: on-failure
     volumes:
       - sites-feature-cicd:/home/frappe/frappe-bench/sites
       - logs-feature-cicd:/home/frappe/frappe-bench/logs
+      # - sites-${BRANCH_SANITIZE}:/home/frappe/frappe-bench/sites
+      # - logs-${BRANCH_SANITIZE}:/home/frappe/frappe-bench/logs
     entrypoint:
       - bash
       - -c
@@ -82,7 +86,7 @@ services:
         echo "sites/common_site_config.json found";
 
   frontend:
-    image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest
+    image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest #ghcr.io/devofs2/pro_erpnext_${BRANCH_SANITIZE}:latest
     depends_on:
       - websocket
     deploy:
@@ -92,7 +96,7 @@ services:
       - nginx-entrypoint.sh
     environment:
       BACKEND: backend:8000
-      FRAPPE_SITE_NAME_HEADER: site-feature-cicd.local
+      FRAPPE_SITE_NAME_HEADER: site-feature-cicd.local #site-${BRANCH_SANITIZE}.local
       SOCKETIO: websocket:9000
       UPSTREAM_REAL_IP_ADDRESS: 127.0.0.1
       UPSTREAM_REAL_IP_HEADER: X-Forwarded-For
@@ -102,13 +106,17 @@ services:
     volumes:
       - sites-feature-cicd:/home/frappe/frappe-bench/sites
       - logs-feature-cicd:/home/frappe/frappe-bench/logs
+      # - sites-${BRANCH_SANITIZE}:/home/frappe/frappe-bench/sites
+      # - logs-${BRANCH_SANITIZE}:/home/frappe/frappe-bench/logs
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.erpnext-feature-cicd.rule=Host(`feature-cicd.161.97.174.134.sslip.io`)"
       - "traefik.http.services.erpnext-feature-cicd.loadbalancer.server.port=8080"
+      # - "traefik.http.routers.erpnext-${BRANCH_SANITIZE}.rule=Host(`${BRANCH_SANITIZE}.161.97.174.134.sslip.io`)"
+      # - "traefik.http.services.erpnext-${BRANCH_SANITIZE}.loadbalancer.server.port=8080"
 
   queue-long:
-    image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest
+    image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest #ghcr.io/devofs2/pro_erpnext_${BRANCH_SANITIZE}:latest
     deploy:
       restart_policy:
         condition: on-failure
@@ -120,9 +128,11 @@ services:
     volumes:
       - sites-feature-cicd:/home/frappe/frappe-bench/sites
       - logs-feature-cicd:/home/frappe/frappe-bench/logs
+      # - sites-${BRANCH_SANITIZE}:/home/frappe/frappe-bench/sites
+      # - logs-${BRANCH_SANITIZE}:/home/frappe/frappe-bench/logs
 
   queue-short:
-    image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest
+    image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest #ghcr.io/devofs2/pro_erpnext_${BRANCH_SANITIZE}:latest
     deploy:
       restart_policy:
         condition: on-failure
@@ -134,6 +144,8 @@ services:
     volumes:
       - sites-feature-cicd:/home/frappe/frappe-bench/sites
       - logs-feature-cicd:/home/frappe/frappe-bench/logs
+      # - sites-${BRANCH_SANITIZE}:/home/frappe/frappe-bench/sites
+      # - logs-${BRANCH_SANITIZE}:/home/frappe/frappe-bench/logs
 
   redis-queue:
     image: redis:6.2-alpine
@@ -142,6 +154,7 @@ services:
         condition: on-failure
     volumes:
       - redis-queue-data-feature-cicd:/data
+      # - redis-queue-${BRANCH_SANITIZE}:/data
 
   redis-cache:
     image: redis:6.2-alpine
@@ -150,7 +163,7 @@ services:
         condition: on-failure
 
   scheduler:
-    image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest
+    image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest #ghcr.io/devofs2/pro_erpnext_${BRANCH_SANITIZE}:latest
     deploy:
       restart_policy:
         condition: on-failure
@@ -160,9 +173,11 @@ services:
     volumes:
       - sites-feature-cicd:/home/frappe/frappe-bench/sites
       - logs-feature-cicd:/home/frappe/frappe-bench/logs
+      # - sites-${BRANCH_SANITIZE}:/home/frappe/frappe-bench/sites
+      # - logs-${BRANCH_SANITIZE}:/home/frappe/frappe-bench/logs
 
   websocket:
-    image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest
+    image: ghcr.io/devofs2/pro_erpnext_feature-cicd:latest #ghcr.io/devofs2/pro_erpnext_${BRANCH_SANITIZE}:latest
     deploy:
       restart_policy:
         condition: on-failure
@@ -172,10 +187,15 @@ services:
     volumes:
       - sites-feature-cicd:/home/frappe/frappe-bench/sites
       - logs-feature-cicd:/home/frappe/frappe-bench/logs
+      # - sites-${BRANCH_SANITIZE}:/home/frappe/frappe-bench/sites
+      # - logs-${BRANCH_SANITIZE}:/home/frappe/frappe-bench/logs
 
 volumes:
   redis-queue-data-feature-cicd:
   sites-feature-cicd:
   logs-feature-cicd:
+  # redis-queue-data-${BRANCH_SANITIZE}:
+  # sites-${BRANCH_SANITIZE}:
+  # logs-${BRANCH_SANITIZE}:
 
-#thanks
+#it's me
