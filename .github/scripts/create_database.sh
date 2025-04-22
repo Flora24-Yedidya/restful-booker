@@ -19,7 +19,7 @@ IMAGE="mariadb:10.6"  # Image Docker
 # Récupérer la liste des bases de données existantes dans le projet
 EXISTING_DB_UUID=$(curl -s -X GET "https://app.coolify.io/api/v1/databases" \
   --header "Authorization: Bearer $COOLIFY_API_KEY" \
-  | jq -r ".[] | select(.name==\"$DATABASE_NAME\" and .type==\"database\") | .uuid")
+  | jq -r ".[] | select(.name==\"$DATABASE_NAME\") | .uuid")
 
 
 # Si la DB existe, on la supprime
