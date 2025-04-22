@@ -11,11 +11,11 @@ on:
   workflow_dispatch: # Déclencheur manuel
 
 jobs:
-  build-and-push:
-    runs-on: ubuntu-latest
-    if: ${{ !startsWith(github.ref, 'refs/heads/dev') && !startsWith(github.ref, 'refs/heads/test') }}
+  # build-and-push:
+  #   runs-on: ubuntu-latest
+  #   if: ${{ !startsWith(github.ref, 'refs/heads/dev') && !startsWith(github.ref, 'refs/heads/test') }}
 
-    steps:
+  #   steps:
       # - name: Checkout repository
       #   uses: actions/checkout@v3
 
