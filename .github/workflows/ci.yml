@@ -94,10 +94,9 @@ jobs:
       - name: delete & create database
         id: create_db
         run: |
-         ./.github/scripts/create_database.sh
-        #  DB_UUID=$(./.github/scripts/create_database.sh)
-        #  echo "$DB_UUID"
-        #  echo "DB_UUID=$DB_UUID" >> $GITHUB_ENV
+         DB_UUID=$(./.github/scripts/create_database.sh)
+         echo "$DB_UUID"
+         echo "DB_UUID=$DB_UUID" >> $GITHUB_ENV
 
         #  sed -i "s|\${DB_UUID}|$DB_UUID|g" docker-compose.yml
         #  sed -i "s|\${MARIADB_ROOT_PASSWORD}|$MARIADB_ROOT_PASSWORD|g" docker-compose.yml
