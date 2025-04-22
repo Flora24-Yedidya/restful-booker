@@ -12,8 +12,7 @@ MARIADB_PASSWORD="123456"  # Mot de passe de l'utilisateur
 DATABASE_NAME="db-feature-pipeline"  # Nom de la base de données
 DESCRIPTION="Database pour feature-pipeline"  # Description
 IMAGE="mariadb:10.6"  # Image Docker
-#hello test
-#merci beaucoup
+
 
 
 # Récupérer la liste des bases de données existantes dans le projet
