@@ -11,31 +11,31 @@ on:
   workflow_dispatch: # Déclencheur manuel
 
 jobs:
-  # build-and-push:
-  #   runs-on: ubuntu-latest
-  #   if: ${{ !startsWith(github.ref, 'refs/heads/dev') && !startsWith(github.ref, 'refs/heads/test') }}
+  build-and-push:
+    runs-on: ubuntu-latest
+    if: ${{ !startsWith(github.ref, 'refs/heads/dev') && !startsWith(github.ref, 'refs/heads/test') }}
 
-  #   steps:
-      # - name: Checkout repository
-      #   uses: actions/checkout@v3
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-      # - name: Get Branch Name
-      #   run: |
-      #     # Récupérer le nom de la branche
-      #     if [[ -n "$GITHUB_HEAD_REF" ]]; then
-      #       branch_name="${GITHUB_HEAD_REF}"
-      #     else
-      #       branch_name=$(git rev-parse --abbrev-ref HEAD)
-      #     fi
+      - name: Get Branch Name
+        run: |
+          # Récupérer le nom de la branche
+          if [[ -n "$GITHUB_HEAD_REF" ]]; then
+            branch_name="${GITHUB_HEAD_REF}"
+          else
+            branch_name=$(git rev-parse --abbrev-ref HEAD)
+          fi
 
-      #     # Remplacer "/" par "-" pour le nom de l'image Docker
-      #     branch_sanitize=$(echo "$branch_name" | sed "s/\//-/g")
+          # Remplacer "/" par "-" pour le nom de l'image Docker
+          branch_sanitize=$(echo "$branch_name" | sed "s/\//-/g")
 
-      #     # Définir les variables d'environnement
-      #     echo "Nom de la branche : $branch_name"
-      #     echo "Branch_sanitize : $branch_sanitize"
-      #     echo "BRANCH_NAME=$branch_name" >> $GITHUB_ENV
-      #     echo "BRANCH_SANITIZE=$branch_sanitize" >> $GITHUB_ENV
+          # Définir les variables d'environnement
+          echo "Nom de la branche : $branch_name"
+          echo "Branch_sanitize : $branch_sanitize"
+          echo "BRANCH_NAME=$branch_name" >> $GITHUB_ENV
+          echo "BRANCH_SANITIZE=$branch_sanitize" >> $GITHUB_ENV
 
       # - name: Build & Push Docker Image
       #   run: |
@@ -54,16 +54,16 @@ jobs:
       #     # docker build --build-arg AUTH_TOKEN=${{ secrets.AUTH_TOKEN }} -t $IMAGE_NAME .
       #     # docker push $IMAGE_NAME
 
-      # - name: Upload Docker Compose & Env Files
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: docker-compose-files
-      #     path: |
-      #       docker-compose.yml
-      #       .env
-      #       .github/scripts/  
-      #     overwrite: true
-      #     include-hidden-files: true
+      - name: Upload Docker Compose & Env Files
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-compose-files
+          path: |
+            docker-compose.yml
+            .env
+            .github/scripts/  
+          overwrite: true
+          include-hidden-files: true
 
   deploy-app:
     runs-on: ubuntu-latest
