@@ -36,12 +36,14 @@ jobs:
           echo "BRANCH_SANITIZE=$branch_sanitize" >> $GITHUB_ENV
           echo "BRANCH_NAME=$BRANCH_NAME" >> .env
           echo "BRANCH_SANITIZE=$BRANCH_SANITIZE" >> .env
-          
+        
+
       - name: Upload Docker Compose & Env Files
         uses: actions/upload-artifact@v4
         with:
-          name: env files
+          name: docker-compose-files
           path: |
+            docker-compose.yml
             .env
             .github/scripts/  
           overwrite: true
