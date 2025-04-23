@@ -82,6 +82,7 @@ jobs:
         id: create_db
         run: |
           DB_UUID=$(./.github/scripts/create_database.sh)
+          echo "$DB_UUID"
           echo "DB_UUID=$DB_UUID" >> $GITHUB_ENV
       
       - name: Check app
