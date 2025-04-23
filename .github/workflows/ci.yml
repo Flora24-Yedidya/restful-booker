@@ -3,11 +3,10 @@ name: ERPNext CI
 on:
   push:
     branches:
-      - dev
-      - test
+      - '*'
   pull_request:
-    branches:
-      - dev
+      branches:
+        - main
   workflow_dispatch: # Déclencheur manuel
 
 jobs:
@@ -79,15 +78,20 @@ jobs:
       - name: Set execute permissions
         run: chmod +x .github/scripts/*.sh
 
-      - name: delete & create database
+      - name: Delete & create database
         id: create_db
         run: |
-         DB_UUID=$(./.github/scripts/create_database.sh)
-         echo "DB_UUID=$DB_UUID" >> $GITHUB_ENV
-    
+          DB_UUID=$(./.github/scripts/create_database.sh)
+          echo "DB_UUID=$DB_UUID" >> $GITHUB_ENV
+      
       - name: Check app
         id: check_app
         run: |
           RESULT=$(./.github/scripts/check_and_create_app.sh $PROJECT_UUID $BRANCH_NAME $BRANCH_SANITIZE $DB_UUID)
           echo "$RESULT"
           echo "APP_UUID=$RESULT" >> $GITHUB_ENV
+      
+      - name: Inject environment variables in Coolify
+        run: |
+          ./.github/scripts/set_env_vars.sh $APP_UUID $BRANCH_SANITIZE $DB_UUID
+        

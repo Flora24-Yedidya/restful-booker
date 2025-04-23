@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Vérification des paramètres
-if [ $# -ne 3 ]; then
+if [ $# -ne 4 ]; then
   echo "Usage: $0 <PROJECT_UUID> <BRANCH_NAME> <BRANCH_SANITIZE>"
   exit 1
 fi
@@ -9,6 +9,7 @@ fi
 PROJECT_UUID=$1
 BRANCH_NAME=$2
 BRANCH_SANITIZE=$3
+DB_UUID=$4
 
 # 🔐 Vérification de la clé API
 if [[ -z "$COOLIFY_API_KEY" ]]; then
