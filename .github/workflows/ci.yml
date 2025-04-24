@@ -34,11 +34,9 @@ jobs:
           echo "Branch_sanitize : $branch_sanitize"
           echo "BRANCH_NAME=$branch_name" >> $GITHUB_ENV
           echo "BRANCH_SANITIZE=$branch_sanitize" >> $GITHUB_ENV
-          echo "BRANCH_NAME=$BRANCH_NAME" >> .env
-          echo "BRANCH_SANITIZE=$BRANCH_SANITIZE" >> .env
+          echo "BRANCH_NAME=$branch_name" >> .env
+          echo "BRANCH_SANITIZE=$branch_sanitize" >> .env
           cat .env
-          ls - la
-        
 
       - name: Upload Docker Compose & Env Files
         uses: actions/upload-artifact@v4
