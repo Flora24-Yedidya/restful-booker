@@ -83,9 +83,8 @@ jobs:
       - name: Delete & create database
         id: create_db
         run: |
-          ./.github/scripts/create_database.sh
-          # DB_UUID=$(./.github/scripts/create_database.sh)
-          # echo "DB_UUID=$DB_UUID" >> $GITHUB_ENV
+          DB_UUID=$(./.github/scripts/create_database.sh)
+          echo "DB_UUID=$DB_UUID" >> $GITHUB_ENV
       
       - name: Check app
         id: check_app
