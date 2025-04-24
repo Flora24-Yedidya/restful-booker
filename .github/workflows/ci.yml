@@ -84,15 +84,15 @@ jobs:
         id: create_db
         run: |
           DB_UUID=$(./.github/scripts/create_database.sh)
+          echo "$DB_UUID"
           echo "DB_UUID=$DB_UUID" >> $GITHUB_ENV
       
       - name: Check app
         id: check_app
         run: |
-          ./.github/scripts/check_and_create_app.sh $PROJECT_UUID $BRANCH_NAME $BRANCH_SANITIZE
-          #RESULT=$(./.github/scripts/check_and_create_app.sh $PROJECT_UUID $BRANCH_NAME $BRANCH_SANITIZE $DB_UUID)
-          #echo "$RESULT"
-          #echo "APP_UUID=$RESULT" >> $GITHUB_ENV
+          RESULT=$(./.github/scripts/check_and_create_app.sh $PROJECT_UUID $BRANCH_NAME $BRANCH_SANITIZE)
+          echo "$RESULT"
+          echo "APP_UUID=$RESULT" >> $GITHUB_ENV
       
       - name: Inject environment variables in Coolify
         run: |
