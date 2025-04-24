@@ -89,9 +89,10 @@ jobs:
       - name: Check app
         id: check_app
         run: |
-          RESULT=$(./.github/scripts/check_and_create_app.sh $PROJECT_UUID $BRANCH_NAME $BRANCH_SANITIZE $DB_UUID)
-          echo "$RESULT"
-          echo "APP_UUID=$RESULT" >> $GITHUB_ENV
+          ./.github/scripts/check_and_create_app.sh $PROJECT_UUID $BRANCH_NAME $BRANCH_SANITIZE
+          #RESULT=$(./.github/scripts/check_and_create_app.sh $PROJECT_UUID $BRANCH_NAME $BRANCH_SANITIZE $DB_UUID)
+          #echo "$RESULT"
+          #echo "APP_UUID=$RESULT" >> $GITHUB_ENV
       
       - name: Inject environment variables in Coolify
         run: |
