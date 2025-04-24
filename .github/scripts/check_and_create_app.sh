@@ -33,8 +33,8 @@ if [[ -z "$APP_UUID" || "$APP_UUID" == "null" ]]; then
     exit 1
   fi
 else
-  echo "✅ L'application existe déjà : $APP_UUID"
+  echo "$APP_UUID"
 fi
 
 # 📦 Affichage final
-echo "$APP_UUID"
+#echo "$APP_UUID"
