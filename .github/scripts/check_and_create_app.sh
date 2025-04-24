@@ -37,4 +37,4 @@ else
 fi
 
 # 📦 Affichage final
-#echo "$APP_UUID"
+echo "$APP_UUID"
