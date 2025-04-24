@@ -1,32 +1,124 @@
-name: Get Branch Name
+name: ERPNext CI
 
 on:
   push:
     branches:
-      - '**'  # Pour toutes les branches
+      - '*'
   pull_request:
-    branches:
-      - '**'  # Pour toutes les PR
+      branches:
+        - main
+  workflow_dispatch: # Déclencheur manuel
 
 jobs:
-  get-branch-name:
+  staging: 
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      - name: 🛎 Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  
+  
 
-      - name: Set up the branch name script
-        run: |
-          echo '#!/bin/bash' > get-branch-name.sh
-          echo 'if [[ -n "$GITHUB_HEAD_REF" ]]; then' >> get-branch-name.sh
-          echo '    branch_name="${GITHUB_HEAD_REF}"' >> get-branch-name.sh
-          echo 'else' >> get-branch-name.sh
-          echo '    branch_name=$(git rev-parse --abbrev-ref HEAD)' >> get-branch-name.sh
-          echo 'fi' >> get-branch-name.sh
-          echo 'branch_name=$(echo "$branch_name" | sed "s/\//-/g")' >> get-branch-name.sh
-          echo 'echo "Nom de la branche : $branch_name"' >> get-branch-name.sh
-          chmod +x get-branch-name.sh
+      - uses: sonarsource/sonarqube-scan-action@v4
+        with:
+          args: -Dsonar.branch.name=${{ github.head_ref || github.ref_name }}
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+        continue-on-error: true 
+        
+      - uses: sonarsource/sonarqube-quality-gate-action@v1
+        timeout-minutes: 5
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        continue-on-error: true 
 
-      - name: Run branch name script
-        run: ./get-branch-name.sh
+
+  # build-and-push:
+  #   runs-on: ubuntu-latest
+  #   if: ${{ !startsWith(github.ref, 'refs/heads/dev') && !startsWith(github.ref, 'refs/heads/test') }}
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v3
+
+  #     - name: Get Branch Name
+  #       run: |
+  #         # Récupérer le nom de la branche
+  #         if [[ -n "$GITHUB_HEAD_REF" ]]; then
+  #           branch_name="${GITHUB_HEAD_REF}"
+  #         else
+  #           branch_name=$(git rev-parse --abbrev-ref HEAD)
+  #         fi
+
+  #         # Remplacer "/" par "-" pour le nom de l'image Docker
+  #         branch_sanitize=$(echo "$branch_name" | sed "s/\//-/g")
+
+  #         # Définir les variables d'environnement
+  #         echo "Nom de la branche : $branch_name"
+  #         echo "Branch_sanitize : $branch_sanitize"
+  #         echo "BRANCH_NAME=$branch_name" >> $GITHUB_ENV
+  #         echo "BRANCH_SANITIZE=$branch_sanitize" >> $GITHUB_ENV
+  #         echo "BRANCH_NAME=$branch_name" >> .env
+  #         echo "BRANCH_SANITIZE=$branch_sanitize" >> .env
+  #         cat .env
+
+  #     - name: Upload Docker Compose & Env Files
+  #       uses: actions/upload-artifact@v4
+  #       with:
+  #         name: docker-compose-files
+  #         path: |
+  #           docker-compose.yml
+  #           .env
+  #           .github/scripts/  
+  #         overwrite: true
+  #         include-hidden-files: true
+
+  # deploy-app:
+  #   runs-on: ubuntu-latest
+  #   needs: build-and-push
+  #   env:
+  #     COOLIFY_API_KEY: ${{ secrets.COOLIFY_API_KEY }}
+  #     PROJECT_UUID: "oo0o044sk8woco480k8occk0"
+  #     BRANCH_NAME: $BRANCH_NAME
+  #     BRANCH_SANITIZE: $BRANCH_SANITIZE
+  #     SERVER_UUID: ${{ secrets.SERVER_UUID}} # UUID du serveur
+  #     MARIADB_ROOT_PASSWORD: ${{ secrets.MARIADB_ROOT_PASSWORD}}  # Mot de passe root de MariaDB
+  #     MARIADB_USER: ${{ secrets. MARIADB_USER}}  # Utilisateur MariaDB
+  #     MARIADB_PASSWORD: ${{ secrets.MARIADB_PASSWORD}}  # Mot de passe de l'utilisateur
+
+
+  #   steps:
+  #     - name: Download Docker Compose & Env Files
+  #       uses: actions/download-artifact@v4
+  #       with:
+  #         name: docker-compose-files
+  #         path: .
+      
+  #     - name: Install jq
+  #       run: sudo apt-get install jq -y
+
+  #     - name: Load environment variables
+  #       run: |
+  #         cat .env >> $GITHUB_ENV
+    
+  #     - name: Set execute permissions
+  #       run: chmod +x .github/scripts/*.sh
+
+  #     - name: Delete & create database
+  #       id: create_db
+  #       run: |
+  #         DB_UUID=$(./.github/scripts/create_database.sh)
+  #         echo "$DB_UUID"
+  #         echo "DB_UUID=$DB_UUID" >> $GITHUB_ENV
+      
+  #     - name: Check app
+  #       id: check_app
+  #       run: |
+  #         RESULT=$(./.github/scripts/check_and_create_app.sh $PROJECT_UUID $BRANCH_NAME $BRANCH_SANITIZE)
+  #         echo "$RESULT"
+  #         echo "APP_UUID=$RESULT" >> $GITHUB_ENV
+      
+  #     - name: Inject environment variables in Coolify
+  #       run: |
+  #         ./.github/scripts/set_env_vars.sh $APP_UUID $BRANCH_SANITIZE $DB_UUID
+        
